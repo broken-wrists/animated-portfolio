@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.env*
+*.log
+.DS_Store
+dist/
+build/
+.vercel
+coverage/
+.nyc_output/
+.cache/
+.temp/
+.tmp/
+*.tsbuildinfo
+.eslintcache
