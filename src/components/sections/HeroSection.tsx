@@ -110,7 +110,8 @@ const HeroSection: React.FC = () => {
         >
           <motion.button
             onClick={() => document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })}
-            className="group relative px-8 py-4 bg-gradient-to-r from-neon-green to-electric-blue rounded-full font-semibold text-dark-bg transition-all duration-300 hover:shadow-2xl hover:shadow-neon-green/25"
+            className="group relative px-8 py-4 bg-gradient-to-r from-neon-green to-electric-blue rounded-full font-semibold text-dark-bg transition-all duration-300 hover:shadow-2xl hover:shadow-neon-green/25 cursor-hover"
+            data-cursor="hover"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -120,7 +121,8 @@ const HeroSection: React.FC = () => {
 
           <motion.button
             onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
-            className="px-8 py-4 border border-white/20 rounded-full font-semibold text-white hover:border-neon-green hover:text-neon-green transition-all duration-300 hover:shadow-lg hover:shadow-neon-green/10"
+            className="px-8 py-4 border border-white/20 rounded-full font-semibold text-white hover:border-neon-green hover:text-neon-green transition-all duration-300 hover:shadow-lg hover:shadow-neon-green/10 cursor-hover"
+            data-cursor="hover"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}
           >

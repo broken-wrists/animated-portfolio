@@ -70,7 +70,6 @@ export default function RootLayout({
         <div className="relative min-h-screen">
           {children}
         </div>
-        <div id="cursor-follower" className="fixed w-4 h-4 bg-neon-green rounded-full pointer-events-none z-50 opacity-0 transition-opacity duration-300" />
       </body>
     </html>
   )

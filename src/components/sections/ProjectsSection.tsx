@@ -181,7 +181,7 @@ const ProjectsSection: React.FC = () => {
                   onMouseEnter={() => setHoveredProject(project.id)}
                   onMouseLeave={() => setHoveredProject(null)}
                 >
-                  <div className="perspective-card h-full">
+                  <div className="perspective-card h-full cursor-hover" data-cursor="image">
                     <div className="card-3d bg-dark-surface rounded-2xl overflow-hidden border border-white/10 hover:border-white/20 transition-all duration-500">
                       {/* Project Image */}
                       <div className="relative h-64 overflow-hidden">

@@ -3,55 +3,19 @@
 import React, { useEffect, useState } from 'react'
 import Navigation from '@/components/ui/Navigation'
 import HeroSection from '@/components/sections/HeroSection'
+import VisualShowcase from '@/components/sections/VisualShowcase'
 import AboutSection from '@/components/sections/AboutSection'
 import ProjectsSection from '@/components/sections/ProjectsSection'
 import SkillsSection from '@/components/sections/SkillsSection'
 import ContactSection from '@/components/sections/ContactSection'
 import Footer from '@/components/ui/Footer'
 import LoadingScreen from '@/components/ui/LoadingScreen'
-import { useMousePosition } from '@/hooks/useMousePosition'
+import CustomCursor from '@/components/ui/CustomCursor'
 
 export default function HomePage() {
-  const mousePosition = useMousePosition()
   const [isLoading, setIsLoading] = useState(true)
   const [scrollProgress, setScrollProgress] = useState(0)
 
-  // Custom cursor follower effect
-  useEffect(() => {
-    const cursor = document.getElementById('cursor-follower')
-    if (cursor) {
-      const updateCursor = () => {
-        cursor.style.left = `${mousePosition.x - 8}px`
-        cursor.style.top = `${mousePosition.y - 8}px`
-        cursor.style.opacity = '1'
-      }
-
-      const hideCursor = () => {
-        cursor.style.opacity = '0'
-      }
-
-      const showCursor = () => {
-        cursor.style.opacity = '1'
-      }
-
-      updateCursor()
-
-      // Hide cursor when leaving window
-      document.addEventListener('mouseleave', hideCursor)
-      document.addEventListener('mouseenter', showCursor)
-
-      // Hide cursor on mobile
-      const isMobile = window.matchMedia('(max-width: 768px)').matches
-      if (isMobile) {
-        cursor.style.display = 'none'
-      }
-
-      return () => {
-        document.removeEventListener('mouseleave', hideCursor)
-        document.removeEventListener('mouseenter', showCursor)
-      }
-    }
-  }, [mousePosition])
 
   // Smooth scroll behavior for hash links
   useEffect(() => {
@@ -129,6 +93,9 @@ export default function HomePage() {
       {/* Loading Screen */}
       <LoadingScreen onComplete={() => setIsLoading(false)} />
 
+      {/* Custom Cursor */}
+      {!isLoading && <CustomCursor />}
+
       {/* Main Content */}
       {!isLoading && (
         <main className="relative">
@@ -137,6 +104,7 @@ export default function HomePage() {
 
           {/* Page Sections */}
           <HeroSection />
+          <VisualShowcase />
           <AboutSection />
           <ProjectsSection />
           <SkillsSection />

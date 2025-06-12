@@ -81,7 +81,8 @@ const Navigation: React.FC = () => {
                       e.preventDefault()
                       handleNavClick(item.href)
                     }}
-                    className="text-gray-300 hover:text-neon-green px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 relative group cursor-pointer"
+                    className="text-gray-300 hover:text-neon-green px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 relative group cursor-pointer cursor-hover"
+                    data-cursor="hover"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     initial={{ opacity: 0, y: -20 }}
@@ -103,7 +104,8 @@ const Navigation: React.FC = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-neon-green transition-colors duration-200"
+                  className="text-gray-400 hover:text-neon-green transition-colors duration-200 cursor-hover"
+                  data-cursor="hover"
                   whileHover={{ scale: 1.2, rotate: 5 }}
                   whileTap={{ scale: 0.9 }}
                   initial={{ opacity: 0, scale: 0 }}
