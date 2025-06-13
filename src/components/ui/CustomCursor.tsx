@@ -20,6 +20,7 @@ const CustomCursor: React.FC = () => {
     color: '#39ff14',
     scale: 1,
   })
+  const [dynamicColor, setDynamicColor] = useState('#39ff14')
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
@@ -73,7 +74,7 @@ const CustomCursor: React.FC = () => {
         setCursorState({
           isHovering: false,
           cursorType: 'default',
-          color: '#39ff14',
+          color: dynamicColor,
           scale: 1,
         })
       }
@@ -83,7 +84,7 @@ const CustomCursor: React.FC = () => {
       setCursorState({
         isHovering: false,
         cursorType: 'default',
-        color: '#39ff14',
+        color: dynamicColor,
         scale: 1,
       })
     }
@@ -104,7 +105,62 @@ const CustomCursor: React.FC = () => {
       document.removeEventListener('mouseout', handleElementLeave)
       document.body.style.cursor = 'auto'
     }
-  }, [])
+  }, [dynamicColor])
+
+  // Dynamic color shifting effect
+  useEffect(() => {
+    const colorPalette = [
+      '#39ff14', // neon green
+      '#00ff88', // mint green
+      '#00ffcc', // cyan
+      '#00ccff', // light blue
+      '#007fff', // electric blue
+      '#0044ff', // deep blue
+      '#4400ff', // purple blue
+      '#8800ff', // purple
+      '#cc00ff', // magenta
+      '#ff00cc', // pink
+      '#ff0088', // hot pink
+      '#ff0044', // red pink
+      '#ff4400', // orange red
+      '#ff8800', // orange
+      '#ffcc00', // yellow orange
+      '#ccff00', // lime
+      '#88ff00', // light green
+      '#44ff00', // bright green
+    ]
+
+    let colorIndex = 0
+    const colorShiftInterval = setInterval(() => {
+      if (!cursorState.isHovering) {
+        setDynamicColor(colorPalette[colorIndex])
+        colorIndex = (colorIndex + 1) % colorPalette.length
+      }
+    }, 150) // Change color every 150ms for smooth transitions
+
+    return () => clearInterval(colorShiftInterval)
+  }, [cursorState.isHovering])
+
+  // Mouse movement color changes
+  useEffect(() => {
+    let lastMoveTime = Date.now()
+    
+    const handleMouseMove = () => {
+      const now = Date.now()
+      const timeDiff = now - lastMoveTime
+      
+      if (timeDiff > 50 && !cursorState.isHovering) { // Only change if not hovering
+        const colors = ['#39ff14', '#007fff', '#ff1493', '#4a0080', '#00ffcc', '#ff8800']
+        const randomColor = colors[Math.floor(Math.random() * colors.length)]
+        setDynamicColor(randomColor)
+      }
+      
+      lastMoveTime = now
+    }
+
+    document.addEventListener('mousemove', handleMouseMove)
+    return () => document.removeEventListener('mousemove', handleMouseMove)
+  }, [cursorState.isHovering])
 
   // Hide cursor on mobile
   useEffect(() => {
@@ -116,16 +172,20 @@ const CustomCursor: React.FC = () => {
     }
   }, [])
 
+  const currentColor = cursorState.isHovering ? cursorState.color : dynamicColor
+
   const cursorVariants = {
     default: {
       scale: cursorState.scale,
-      backgroundColor: cursorState.color,
+      backgroundColor: currentColor,
       mixBlendMode: 'difference' as const,
+      boxShadow: `0 0 20px ${currentColor}40`,
     },
     hover: {
       scale: cursorState.scale,
       backgroundColor: cursorState.color,
       mixBlendMode: 'difference' as const,
+      boxShadow: `0 0 30px ${cursorState.color}60`,
     }
   }
 
@@ -178,23 +238,66 @@ const CustomCursor: React.FC = () => {
                 ease: 'easeInOut',
               }}
             />
+
+            {/* Color gradient overlay */}
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: `linear-gradient(45deg, ${currentColor}, transparent, ${currentColor})`
+              }}
+              animate={{
+                rotate: 360,
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                rotate: {
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: 'linear',
+                },
+                opacity: {
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }
+              }}
+            />
           </motion.div>
 
           {/* Cursor Trail */}
           <motion.div
-            className="fixed pointer-events-none z-[9998] rounded-full opacity-30"
+            className="fixed pointer-events-none z-[9998] rounded-full opacity-40"
             style={{
               left: mousePosition.x - 8,
               top: mousePosition.y - 8,
               width: 16,
               height: 16,
-              backgroundColor: cursorState.color,
+              backgroundColor: currentColor,
+              boxShadow: `0 0 15px ${currentColor}80`,
             }}
             transition={{
               type: 'spring',
               stiffness: 150,
               damping: 20,
               mass: 1,
+            }}
+          />
+
+          {/* Secondary trail with different color */}
+          <motion.div
+            className="fixed pointer-events-none z-[9997] rounded-full opacity-20"
+            style={{
+              left: mousePosition.x - 6,
+              top: mousePosition.y - 6,
+              width: 12,
+              height: 12,
+              backgroundColor: cursorState.isHovering ? cursorState.color : '#ffffff',
+            }}
+            transition={{
+              type: 'spring',
+              stiffness: 100,
+              damping: 25,
+              mass: 1.5,
             }}
           />
 
@@ -248,7 +351,8 @@ const CustomCursor: React.FC = () => {
               top: mousePosition.y - 24,
               width: 48,
               height: 48,
-              borderColor: cursorState.color,
+              borderColor: currentColor,
+              background: `conic-gradient(from 0deg, ${currentColor}40, transparent, ${currentColor}40)`,
             }}
             animate={{
               rotate: 360,
@@ -277,7 +381,7 @@ const CustomCursor: React.FC = () => {
                   style={{
                     left: mousePosition.x,
                     top: mousePosition.y,
-                    backgroundColor: cursorState.color,
+                    backgroundColor: currentColor,
                   }}
                   animate={{
                     x: [0, (Math.cos(i * 60 * Math.PI / 180) * 30)],
