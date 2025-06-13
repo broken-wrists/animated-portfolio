@@ -9,7 +9,7 @@ const Navigation: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const navItems = [
-    { name: 'Home', href: '#home' },
+    { name: 'Home', href: '#hero-content' },
     { name: 'About', href: '#about' },
     { name: 'Projects', href: '#projects' },
     { name: 'Skills', href: '#skills' },
@@ -59,10 +59,10 @@ const Navigation: React.FC = () => {
               whileTap={{ scale: 0.95 }}
             >
               <a
-                href="#home"
+                href="#hero-content"
                 onClick={(e) => {
                   e.preventDefault()
-                  handleNavClick('#home')
+                  handleNavClick('#hero-content')
                 }}
                 className="text-2xl font-bold gradient-text cursor-pointer"
               >

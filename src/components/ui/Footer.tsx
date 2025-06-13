@@ -44,7 +44,7 @@ const Footer: React.FC = () => {
               <h4 className="text-lg font-semibold text-white mb-4">Quick Links</h4>
               <nav className="space-y-2">
                 {[
-                  { name: 'Home', href: '#home' },
+                  { name: 'Home', href: '#hero-content' },
                   { name: 'About', href: '#about' },
                   { name: 'Projects', href: '#projects' },
                   { name: 'Skills', href: '#skills' },
