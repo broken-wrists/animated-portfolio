@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Navigation from '@/components/ui/Navigation'
-import GeometricHero from '@/components/sections/GeometricHero'
+import InkHero from '@/components/sections/InkHero'
 import HeroSection from '@/components/sections/HeroSection'
 import VisualShowcase from '@/components/sections/VisualShowcase'
 import AboutSection from '@/components/sections/AboutSection'
@@ -104,7 +104,7 @@ export default function HomePage() {
           <Navigation />
 
           {/* Page Sections */}
-          <GeometricHero />
+          <InkHero />
           <HeroSection />
           <AboutSection />
           <ProjectsSection />
