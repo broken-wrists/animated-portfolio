@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Navigation from '@/components/ui/Navigation'
-import NeuralGardenHero from '@/components/sections/NeuralGardenHero'
+import MercuryHero from '@/components/sections/MercuryHero'
 import HeroSection from '@/components/sections/HeroSection'
 import AboutSection from '@/components/sections/AboutSection'
 import ProjectsSection from '@/components/sections/ProjectsSection'
@@ -103,7 +103,7 @@ export default function HomePage() {
           <Navigation />
 
           {/* Page Sections */}
-          <NeuralGardenHero />
+          <MercuryHero />
           <HeroSection />
           <AboutSection />
           <ProjectsSection />
