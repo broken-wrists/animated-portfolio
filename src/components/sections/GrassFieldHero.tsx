@@ -17,6 +17,7 @@ interface GrassBlade {
   growth: number
   color: string
   species: 'fescue' | 'bermuda' | 'clover' | 'wildflower'
+  flexibility: number
 }
 
 interface WindGust {
