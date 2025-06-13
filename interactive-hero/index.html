@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Hero Section</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main hero container -->
+    <section class="hero">
+        <!-- Background layers for parallax effect -->
+        <div class="parallax-bg" data-speed="0.2">
+            <div class="bg-pattern"></div>
+        </div>
+        
+        <!-- Floating art elements -->
+        <div class="floating-element circle-1" data-speed="0.5">🌟</div>
+        <div class="floating-element circle-2" data-speed="0.3">⚡</div>
+        <div class="floating-element triangle-1" data-speed="0.7">🔮</div>
+        <div class="floating-element square-1" data-speed="0.4">💫</div>
+        <div class="floating-element circle-3" data-speed="0.6">✨</div>
+        <div class="floating-element triangle-2" data-speed="0.35">🌀</div>
+        
+        <!-- SVG geometric shapes as additional floating elements -->
+        <div class="svg-element element-1" data-speed="0.8">
+            <svg width="60" height="60" viewBox="0 0 60 60">
+                <polygon points="30,5 55,50 5,50" fill="#6366f1" opacity="0.7"/>
+            </svg>
+        </div>
+        
+        <div class="svg-element element-2" data-speed="0.25">
+            <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="35" fill="none" stroke="#10b981" stroke-width="3" opacity="0.6"/>
+            </svg>
+        </div>
+        
+        <div class="svg-element element-3" data-speed="0.55">
+            <svg width="50" height="50" viewBox="0 0 50 50">
+                <rect x="10" y="10" width="30" height="30" fill="#f59e0b" opacity="0.5" rx="5"/>
+            </svg>
+        </div>
+        
+        <!-- Main content -->
+        <div class="hero-content" data-speed="0.1">
+            <h1 class="hero-title">
+                <span class="title-line">Digital</span>
+                <span class="title-line">Artisan</span>
+            </h1>
+            <p class="hero-subtitle">
+                Creating immersive experiences through interactive design
+            </p>
+            <div class="hero-actions">
+                <button class="cta-button">Explore Work</button>
+                <button class="secondary-button">Contact</button>
+            </div>
+        </div>
+        
+        <!-- Ambient particles -->
+        <div class="particles">
+            <div class="particle" data-speed="0.9"></div>
+            <div class="particle" data-speed="0.7"></div>
+            <div class="particle" data-speed="0.6"></div>
+            <div class="particle" data-speed="0.8"></div>
+            <div class="particle" data-speed="0.5"></div>
+        </div>
+        
+        <!-- Scroll indicator -->
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+            <span>Scroll</span>
+        </div>
+    </section>
+    
+    <!-- Demo content below hero -->
+    <section class="demo-content">
+        <div class="container">
+            <h2>Demo Section</h2>
+            <p>This section demonstrates that the hero is truly fullscreen and the rest of the page continues below.</p>
+        </div>
+    </section>
+    
+    <script src="script.js"></script>
+</body>
+</html>
