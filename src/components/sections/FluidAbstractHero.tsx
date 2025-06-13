@@ -43,27 +43,27 @@ const FluidAbstractHero: React.FC = () => {
   const initializeShapes = useCallback(() => {
     const shapeTypes: FloatingShape['type'][] = ['blob', 'circle', 'gradient', 'ring']
     const colors = [
-      'rgba(59, 130, 246, 0.6)',   // Blue
-      'rgba(147, 51, 234, 0.5)',   // Purple
-      'rgba(16, 185, 129, 0.4)',   // Emerald
-      'rgba(245, 158, 11, 0.5)',   // Amber
-      'rgba(236, 72, 153, 0.4)',   // Pink
-      'rgba(99, 102, 241, 0.5)',   // Indigo
-      'rgba(6, 182, 212, 0.4)',    // Cyan
-      'rgba(139, 92, 246, 0.5)',   // Violet
+      'rgba(59, 130, 246, 0.85)',   // Blue - increased opacity
+      'rgba(147, 51, 234, 0.8)',    // Purple - increased opacity
+      'rgba(16, 185, 129, 0.75)',   // Emerald - increased opacity
+      'rgba(245, 158, 11, 0.8)',    // Amber - increased opacity
+      'rgba(236, 72, 153, 0.75)',   // Pink - increased opacity
+      'rgba(99, 102, 241, 0.8)',    // Indigo - increased opacity
+      'rgba(6, 182, 212, 0.75)',    // Cyan - increased opacity
+      'rgba(139, 92, 246, 0.8)',    // Violet - increased opacity
     ]
 
     const newShapes: FloatingShape[] = []
     
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 12; i++) { // Increased from 8 to 12 shapes
       newShapes.push({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
         depth: 0.1 + Math.random() * 0.8, // 0.1 to 0.9
-        scale: 0.5 + Math.random() * 1.5, // 0.5 to 2
-        blur: Math.random() * 15 + 5, // 5 to 20px
-        opacity: 0.3 + Math.random() * 0.4, // 0.3 to 0.7
+        scale: 0.8 + Math.random() * 1.8, // 0.8 to 2.6 - larger shapes
+        blur: Math.random() * 12 + 3, // 3 to 15px - less blur for more visibility
+        opacity: 0.6 + Math.random() * 0.4, // 0.6 to 1.0 - much higher opacity
         rotation: Math.random() * 360,
         rotationSpeed: (Math.random() - 0.5) * 0.5, // -0.25 to 0.25
         oscillationX: Math.random() * 40 + 20, // 20 to 60
@@ -156,7 +156,7 @@ const FluidAbstractHero: React.FC = () => {
   const renderShape = (shape: FloatingShape) => {
     const baseStyle = {
       transform: getShapeTransform(shape),
-      filter: `blur(${shape.blur}px)`,
+      filter: `blur(${shape.blur}px) drop-shadow(0 0 30px ${shape.color}) drop-shadow(0 0 60px ${shape.color})`,
       opacity: shape.opacity,
       transition: isMobile ? 'none' : 'transform 0.1s ease-out'
     }
@@ -169,10 +169,11 @@ const FluidAbstractHero: React.FC = () => {
             className="absolute pointer-events-none"
             style={{
               ...baseStyle,
-              width: '120px',
-              height: '100px',
-              background: `radial-gradient(ellipse at center, ${shape.color}, transparent 70%)`,
+              width: '180px', // Increased size
+              height: '150px', // Increased size
+              background: `radial-gradient(ellipse at center, ${shape.color}, ${shape.color.replace(/0\.\d+\)/, '0.4)')} 50%, transparent 80%)`,
               borderRadius: '60% 40% 70% 30%',
+              boxShadow: `inset 0 0 50px ${shape.color.replace(/0\.\d+\)/, '0.3)')}`,
             }}
           />
         )
@@ -184,10 +185,11 @@ const FluidAbstractHero: React.FC = () => {
             className="absolute pointer-events-none"
             style={{
               ...baseStyle,
-              width: '80px',
-              height: '80px',
-              background: `radial-gradient(circle, ${shape.color}, transparent 60%)`,
+              width: '130px', // Increased size
+              height: '130px', // Increased size
+              background: `radial-gradient(circle, ${shape.color}, ${shape.color.replace(/0\.\d+\)/, '0.3)')} 40%, transparent 70%)`,
               borderRadius: '50%',
+              boxShadow: `0 0 80px ${shape.color}, inset 0 0 40px ${shape.color.replace(/0\.\d+\)/, '0.2)')}`,
             }}
           />
         )
@@ -199,10 +201,11 @@ const FluidAbstractHero: React.FC = () => {
             className="absolute pointer-events-none"
             style={{
               ...baseStyle,
-              width: '140px',
-              height: '60px',
-              background: `linear-gradient(45deg, ${shape.color}, transparent)`,
+              width: '200px', // Increased size
+              height: '90px', // Increased size
+              background: `linear-gradient(45deg, ${shape.color}, ${shape.color.replace(/0\.\d+\)/, '0.4)')} 50%, transparent 80%)`,
               borderRadius: '50px',
+              boxShadow: `0 0 60px ${shape.color}`,
             }}
           />
         )
@@ -211,13 +214,14 @@ const FluidAbstractHero: React.FC = () => {
         return (
           <div
             key={shape.id}
-            className="absolute pointer-events-none border-2 rounded-full"
+            className="absolute pointer-events-none rounded-full"
             style={{
               ...baseStyle,
-              width: '100px',
-              height: '100px',
-              borderColor: shape.color,
-              background: 'transparent',
+              width: '150px', // Increased size
+              height: '150px', // Increased size
+              border: `4px solid ${shape.color}`, // Thicker border
+              background: `radial-gradient(circle, transparent 60%, ${shape.color.replace(/0\.\d+\)/, '0.1)')} 100%)`,
+              boxShadow: `0 0 60px ${shape.color}, inset 0 0 30px ${shape.color.replace(/0\.\d+\)/, '0.2)')}`,
             }}
           />
         )
@@ -235,12 +239,14 @@ const FluidAbstractHero: React.FC = () => {
     >
       {/* Ambient background gradient */}
       <div 
-        className="absolute inset-0 opacity-20"
+        className="absolute inset-0 opacity-30"
         style={{
           background: `
-            radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(147, 51, 234, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.05) 0%, transparent 70%)
+            radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 60%),
+            radial-gradient(circle at 80% 80%, rgba(147, 51, 234, 0.12) 0%, transparent 55%),
+            radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 70%),
+            radial-gradient(circle at 70% 30%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 30% 70%, rgba(236, 72, 153, 0.08) 0%, transparent 45%)
           `
         }}
       />
@@ -250,13 +256,15 @@ const FluidAbstractHero: React.FC = () => {
         {shapes.map(renderShape)}
       </div>
       
-      {/* Subtle depth layers */}
+      {/* Enhanced depth layers */}
       <div 
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-40"
         style={{
           background: `
-            radial-gradient(circle at 60% 40%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
-            radial-gradient(circle at 30% 70%, rgba(236, 72, 153, 0.03) 0%, transparent 30%)
+            radial-gradient(circle at 60% 40%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 30% 70%, rgba(236, 72, 153, 0.06) 0%, transparent 40%),
+            radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 35%),
+            radial-gradient(circle at 15% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 30%)
           `,
           transform: `translate3d(${currentOffset.x * 0.1}px, ${currentOffset.y * 0.1}px, 0)`
         }}
