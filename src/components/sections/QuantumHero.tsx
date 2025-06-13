@@ -373,120 +373,31 @@ const QuantumHero: React.FC = () => {
         className="absolute inset-0 w-full h-full cursor-none"
       />
 
-      {/* Content Overlay */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-6">
-        <div className="text-center max-w-4xl mx-auto">
-          {/* Greeting */}
-          <motion.div
-            className="mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8 }}
-          >
-            <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-500/10 backdrop-blur-md border border-blue-500/20 text-blue-300 text-sm font-medium">
-              ⚛️ Quantum Field Activated - Welcome
-            </span>
-          </motion.div>
 
-          {/* Main Title */}
-          <motion.h1 
-            className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 1 }}
-          >
-            <span className="block text-white mb-2">I'm a</span>
-            <span 
-              className="block"
-              style={{
-                background: 'linear-gradient(135deg, #00d4ff 0%, #ff6b35 30%, #a8e6cf 60%, #ffff00 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 0 20px rgba(0, 212, 255, 0.5))'
-              }}
-            >
-              Digital Artisan
-            </span>
-          </motion.h1>
-
-          <motion.div
-            className="text-xl md:text-2xl text-blue-200 mb-8 font-light tracking-wide"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-          >
-            James Guadagnoli - Creative Developer & Digital Artist
-          </motion.div>
-
-          <motion.p
-            className="text-xl md:text-2xl lg:text-3xl text-slate-200 mb-8 max-w-3xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1, duration: 0.8 }}
-          >
-            Crafting{' '}
-            <span className="text-blue-300 font-semibold">immersive experiences</span>
-            {' '}through code, creativity, and{' '}
-            <span className="text-orange-300 font-semibold">cutting-edge technology</span>
-          </motion.p>
-
-          <motion.p
-            className="text-lg text-slate-400 mb-12 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.3, duration: 0.8 }}
-          >
-            I transform ideas into stunning digital realities using modern web technologies,
-            3D animations, and interactive experiences that push the boundaries of what's possible.
-          </motion.p>
-
-          <motion.div
-            className="flex flex-col sm:flex-row gap-6 justify-center items-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.5, duration: 0.8 }}
-          >
-            <motion.button
-              onClick={() => document.querySelector('#projects')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group relative px-8 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 backdrop-blur-sm border border-blue-500/30 rounded-full text-white font-medium hover:border-blue-400 transition-all duration-300"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              View My Work
-              <motion.div
-                className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/30 to-purple-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              />
-            </motion.button>
-
-            <motion.button
-              onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
-              className="px-8 py-3 text-slate-300 hover:text-blue-300 transition-colors duration-300"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Get In Touch →
-            </motion.button>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Interactive instruction */}
+      {/* Scroll Indicator */}
       <motion.div
-        className="absolute bottom-12 left-1/2 transform -translate-x-1/2 text-center text-slate-500 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer z-20"
+        onClick={() => document.querySelector('#hero-content')?.scrollIntoView({ behavior: 'smooth' })}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2 }}
+        whileHover={{ scale: 1.1 }}
       >
-        <p className="text-sm tracking-wider mb-2">
-          Move cursor to manipulate quantum fields
-        </p>
         <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-xs"
+          className="w-6 h-10 border-2 border-white/30 rounded-full mx-auto mb-2 relative hover:border-white/60 transition-colors duration-300"
         >
-          ↓
+          <motion.div
+            className="w-1 h-3 bg-white/50 rounded-full absolute top-2 left-1/2 transform -translate-x-1/2"
+            animate={{ y: [0, 12, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.div>
+        <motion.div 
+          className="text-white/40 text-xs uppercase tracking-wider hover:text-white/70 transition-colors duration-300"
+          animate={{ opacity: [0.4, 0.8, 0.4] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          Scroll
         </motion.div>
       </motion.div>
 
