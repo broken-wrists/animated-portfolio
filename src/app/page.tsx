@@ -106,7 +106,6 @@ export default function HomePage() {
           {/* Page Sections */}
           <WaterHero />
           <HeroSection />
-          <VisualShowcase />
           <AboutSection />
           <ProjectsSection />
           <SkillsSection />
