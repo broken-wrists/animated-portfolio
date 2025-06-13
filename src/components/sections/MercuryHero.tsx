@@ -331,8 +331,13 @@ const MercuryHero: React.FC = () => {
         })
 
         // Handle merging
+        const dropsToRemove: number[] = []
         for (let i = 0; i < updatedDrops.length; i++) {
+          if (dropsToRemove.includes(i)) continue
+          
           for (let j = i + 1; j < updatedDrops.length; j++) {
+            if (dropsToRemove.includes(j)) continue
+            
             if (mergingDistance(updatedDrops[i], updatedDrops[j])) {
               const drop1 = updatedDrops[i]
               const drop2 = updatedDrops[j]
@@ -352,11 +357,14 @@ const MercuryHero: React.FC = () => {
               }
 
               updatedDrops[i] = mergedDrop
-              updatedDrops.splice(j, 1)
+              dropsToRemove.push(j)
               break
             }
           }
         }
+        
+        // Remove merged drops
+        updatedDrops = updatedDrops.filter((_, index) => !dropsToRemove.includes(index))
 
         return updatedDrops
       })
