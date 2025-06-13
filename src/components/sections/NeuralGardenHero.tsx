@@ -114,7 +114,7 @@ const NeuralGardenHero: React.FC = () => {
 
     // Find closest input node to mouse
     const inputNodes = nodes.filter(node => node.type === 'input')
-    let closestNode: NeuralNode | null = null
+    let closestNodeId: number | null = null
     let minDistance = Infinity
 
     inputNodes.forEach(node => {
@@ -123,19 +123,19 @@ const NeuralGardenHero: React.FC = () => {
       )
       if (distance < minDistance && distance < 120) {
         minDistance = distance
-        closestNode = node
+        closestNodeId = node.id
       }
     })
 
     // Activate closest input node and propagate
-    if (closestNode) {
+    if (closestNodeId !== null) {
       const activationStrength = Math.max(0, 1 - minDistance / 120)
-      propagateActivation(closestNode.id, activationStrength)
+      propagateActivation(closestNodeId, activationStrength)
     }
   }, [mousePosition, nodes])
 
   // Propagate activation through network
-  const propagateActivation = (startNodeId: number, initialStrength: number) => {
+  const propagateActivation = useCallback((startNodeId: number, initialStrength: number) => {
     setNodes(prevNodes => {
       const updatedNodes = [...prevNodes]
       const queue = [{ nodeId: startNodeId, strength: initialStrength, delay: 0 }]
@@ -166,7 +166,7 @@ const NeuralGardenHero: React.FC = () => {
 
       return updatedNodes
     })
-  }
+  }, [flowerPalette])
 
   // Draw a flower based on bloom level
   const drawFlower = (ctx: CanvasRenderingContext2D, node: NeuralNode) => {
