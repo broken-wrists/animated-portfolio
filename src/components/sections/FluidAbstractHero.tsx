@@ -269,6 +269,51 @@ const FluidAbstractHero: React.FC = () => {
           transform: `translate3d(${currentOffset.x * 0.1}px, ${currentOffset.y * 0.1}px, 0)`
         }}
       />
+
+      {/* Main Title - Jimmy G */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
+        style={{
+          transform: `translate3d(${currentOffset.x * 0.05}px, ${currentOffset.y * 0.05}px, 0)`
+        }}
+      >
+        <h1 
+          className="text-8xl md:text-9xl lg:text-[12rem] font-black tracking-tight select-none"
+          style={{
+            background: 'linear-gradient(45deg, #ff0080, #00ff80, #0080ff, #ff8000, #8000ff, #ff0080)',
+            backgroundSize: '400% 400%',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            textShadow: `
+              0 0 20px rgba(255, 0, 128, 0.8),
+              0 0 40px rgba(0, 255, 128, 0.6),
+              0 0 60px rgba(0, 128, 255, 0.4),
+              0 0 80px rgba(255, 128, 0, 0.3)
+            `,
+            filter: 'drop-shadow(0 0 30px rgba(255, 255, 255, 0.3))',
+            animation: 'gradientShift 4s ease-in-out infinite, textGlow 2s ease-in-out infinite alternate'
+          }}
+        >
+          Jimmy G
+        </h1>
+      </div>
+
+      {/* Add custom keyframes for animations */}
+      <style jsx>{`
+        @keyframes gradientShift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        @keyframes textGlow {
+          0% { 
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 0, 128, 0.4));
+          }
+          100% { 
+            filter: drop-shadow(0 0 50px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 100px rgba(0, 255, 128, 0.6));
+          }
+        }
+      `}</style>
       
       {/* Custom cursor for desktop */}
       {!isMobile && (

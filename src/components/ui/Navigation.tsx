@@ -66,7 +66,7 @@ const Navigation: React.FC = () => {
                 }}
                 className="text-2xl font-bold gradient-text cursor-pointer"
               >
-                DA
+                JG
               </a>
             </motion.div>
 
