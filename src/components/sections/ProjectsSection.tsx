@@ -22,69 +22,58 @@ const ProjectsSection: React.FC = () => {
   const projects: Project[] = [
     {
       id: '1',
-      title: 'Immersive 3D Portfolio',
-      description: 'A stunning portfolio website featuring advanced Three.js animations, particle systems, and interactive 3D elements.',
+      title: 'NASA Hackathon: Autonomous Rover Navigation',
+      description: 'Award-winning autonomous rover navigation system using A* pathfinding and machine learning. Developed for NASA, USDA, AWS, and Forest Service collaboration.',
       image: '/api/placeholder/600/400',
-      tags: ['React', 'Three.js', 'GSAP', 'TypeScript'],
+      tags: ['TensorFlow', 'Keras', 'A* Algorithm', 'AWS', 'Python'],
       demoUrl: 'https://demo.example.com',
-      githubUrl: 'https://github.com/example/project',
+      githubUrl: 'https://github.com/broken-wrists',
       featured: true,
-      category: 'animation'
+      category: 'web'
     },
     {
       id: '2',
-      title: 'E-commerce Platform',
-      description: 'Modern e-commerce solution with real-time inventory, payment integration, and advanced analytics dashboard.',
+      title: 'Horticulture Business Development',
+      description: 'Collaborative horticulture business program focusing on social equity initiatives and team dynamics through diverse communication approaches.',
       image: '/api/placeholder/600/400',
-      tags: ['Next.js', 'Stripe', 'PostgreSQL', 'Redux'],
+      tags: ['Project Management', 'Business Development', 'Team Leadership', 'Communication'],
       demoUrl: 'https://demo.example.com',
-      githubUrl: 'https://github.com/example/project',
-      featured: true,
-      category: 'ecommerce'
+      githubUrl: 'https://github.com/broken-wrists',
+      featured: false,
+      category: 'web'
     },
     {
       id: '3',
-      title: 'AI-Powered Dashboard',
-      description: 'Interactive dashboard with machine learning insights, real-time data visualization, and predictive analytics.',
+      title: 'Cultivation Management System',
+      description: 'Designed controlled environments and streamlined operations for agricultural cultivation. Managed teams and optimized processes for enhanced productivity.',
       image: '/api/placeholder/600/400',
-      tags: ['React', 'D3.js', 'Python', 'TensorFlow'],
+      tags: ['Systems Design', 'Process Optimization', 'Team Management', 'SOPs'],
       demoUrl: 'https://demo.example.com',
-      githubUrl: 'https://github.com/example/project',
+      githubUrl: 'https://github.com/broken-wrists',
       featured: false,
       category: 'web'
     },
     {
       id: '4',
-      title: 'Mobile Gaming App',
-      description: 'Cross-platform mobile game with WebGL graphics, multiplayer functionality, and social features.',
+      title: 'Animated Portfolio Website',
+      description: 'Modern portfolio website featuring fluid animations, interactive hero sections, and responsive design using Next.js and TypeScript.',
       image: '/api/placeholder/600/400',
-      tags: ['React Native', 'WebGL', 'Socket.io', 'Node.js'],
+      tags: ['Next.js', 'TypeScript', 'Tailwind CSS', 'Framer Motion'],
       demoUrl: 'https://demo.example.com',
-      githubUrl: 'https://github.com/example/project',
-      featured: false,
-      category: 'mobile'
-    },
-    {
-      id: '5',
-      title: 'Creative Agency Website',
-      description: 'Award-winning website with scroll-triggered animations, custom shaders, and immersive storytelling.',
-      image: '/api/placeholder/600/400',
-      tags: ['Vue.js', 'WebGL', 'GSAP', 'Nuxt.js'],
-      demoUrl: 'https://demo.example.com',
-      githubUrl: 'https://github.com/example/project',
+      githubUrl: 'https://github.com/broken-wrists',
       featured: true,
       category: 'web'
     },
     {
-      id: '6',
-      title: 'VR Experience Platform',
-      description: 'Virtual reality web experience using WebXR, featuring interactive 3D environments and spatial audio.',
+      id: '5',
+      title: 'Computer Science Coursework',
+      description: 'Academic projects and assignments demonstrating proficiency in Java programming, data structures, algorithms, and software engineering principles.',
       image: '/api/placeholder/600/400',
-      tags: ['A-Frame', 'WebXR', 'Three.js', 'Web Audio API'],
+      tags: ['Java', 'Data Structures', 'Algorithms', 'Software Engineering'],
       demoUrl: 'https://demo.example.com',
-      githubUrl: 'https://github.com/example/project',
+      githubUrl: 'https://github.com/broken-wrists',
       featured: false,
-      category: 'animation'
+      category: 'web'
     },
   ]
 

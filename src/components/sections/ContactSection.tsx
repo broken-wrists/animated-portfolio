@@ -32,30 +32,29 @@ const ContactSection: React.FC = () => {
     {
       icon: Mail,
       title: 'Email',
-      value: 'hello@digitalartisan.dev',
-      href: 'mailto:hello@digitalartisan.dev',
+      value: 'jimmyguadagnoli@live.com',
+      href: 'mailto:jimmyguadagnoli@live.com',
       color: 'from-neon-green to-electric-blue'
     },
     {
       icon: Phone,
       title: 'Phone',
-      value: '+1 (555) 123-4567',
-      href: 'tel:+15551234567',
+      value: '(630) 429-6746',
+      href: 'tel:+16304296746',
       color: 'from-electric-blue to-cyber-pink'
     },
     {
       icon: MapPin,
       title: 'Location',
-      value: 'San Francisco, CA',
+      value: 'Fort Collins, CO',
       href: '#',
       color: 'from-cyber-pink to-deep-purple'
     }
   ]
 
   const socialLinks = [
-    { icon: Github, href: 'https://github.com', label: 'GitHub', color: 'hover:text-gray-300' },
-    { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn', color: 'hover:text-blue-400' },
-    { icon: Twitter, href: 'https://twitter.com', label: 'Twitter', color: 'hover:text-sky-400' },
+    { icon: Github, href: 'https://github.com/broken-wrists', label: 'GitHub', color: 'hover:text-gray-300' },
+    { icon: Linkedin, href: 'https://www.linkedin.com/in/james-guadagnoli-a0b58816b/', label: 'LinkedIn', color: 'hover:text-blue-400' },
   ]
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -293,9 +292,9 @@ const ContactSection: React.FC = () => {
                     <h4 className="text-lg font-semibold text-white">Availability</h4>
                   </div>
                   <div className="space-y-2 text-gray-400">
-                    <p>🟢 Currently available for new projects</p>
-                    <p>⏰ Response time: 24-48 hours</p>
-                    <p>🌍 PST timezone (UTC-8)</p>
+                    <p>🎓 CS Student at Colorado State University</p>
+                    <p>⏰ Graduating May 2026</p>
+                    <p>🌍 MST timezone (UTC-7)</p>
                   </div>
                 </motion.div>
 

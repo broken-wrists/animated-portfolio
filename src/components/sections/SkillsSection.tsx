@@ -32,56 +32,56 @@ const SkillsSection: React.FC = () => {
 
   const skillCategories = [
     {
-      title: 'Frontend Development',
+      title: 'Programming',
       icon: Code2,
       color: 'from-neon-green to-electric-blue',
       skills: [
-        { name: 'React/Next.js', level: 95 },
-        { name: 'TypeScript', level: 90 },
-        { name: 'Tailwind CSS', level: 92 },
-        { name: 'Three.js/WebGL', level: 85 },
+        { name: 'Java', level: 85 },
+        { name: 'HTML', level: 80 },
+        { name: 'JavaScript', level: 75 },
+        { name: 'Python', level: 70 },
       ]
     },
     {
-      title: 'Animation & 3D',
+      title: 'Machine Learning & AI',
       icon: Zap,
       color: 'from-electric-blue to-cyber-pink',
       skills: [
-        { name: 'Framer Motion', level: 88 },
-        { name: 'GSAP', level: 85 },
-        { name: 'Three.js', level: 82 },
-        { name: 'WebGL Shaders', level: 75 },
+        { name: 'TensorFlow', level: 80 },
+        { name: 'Keras', level: 75 },
+        { name: 'LSTM Networks', level: 70 },
+        { name: 'A* Algorithm', level: 85 },
       ]
     },
     {
-      title: 'Backend & Database',
+      title: 'Cloud & Platform',
       icon: Database,
       color: 'from-cyber-pink to-deep-purple',
       skills: [
-        { name: 'Node.js', level: 85 },
-        { name: 'PostgreSQL', level: 80 },
-        { name: 'MongoDB', level: 82 },
-        { name: 'Redis', level: 75 },
+        { name: 'AWS Bedrock', level: 75 },
+        { name: 'Amazon S3', level: 80 },
+        { name: 'AWS Nova Pro', level: 70 },
+        { name: 'System Architecture', level: 78 },
       ]
     },
     {
-      title: 'Tools & DevOps',
+      title: 'Technical Skills',
       icon: Cpu,
       color: 'from-deep-purple to-neon-green',
       skills: [
-        { name: 'Git/GitHub', level: 95 },
-        { name: 'Docker', level: 80 },
-        { name: 'AWS/Vercel', level: 85 },
-        { name: 'CI/CD', level: 78 },
+        { name: 'PC/Mac Troubleshooting', level: 90 },
+        { name: 'System Upgrades', level: 85 },
+        { name: 'Microsoft Office Suite', level: 95 },
+        { name: 'Project Management', level: 88 },
       ]
     }
   ]
 
-  const designTools = [
-    { name: 'Figma', icon: Palette, level: 90 },
-    { name: 'Adobe Creative Suite', icon: Layers, level: 85 },
-    { name: 'Blender', icon: Globe, level: 70 },
-    { name: 'Principle', icon: Smartphone, level: 80 },
+  const professionalSkills = [
+    { name: 'Team Leadership', icon: Palette, level: 90 },
+    { name: 'Customer Service', icon: Layers, level: 95 },
+    { name: 'Communication', icon: Globe, level: 92 },
+    { name: 'Problem Solving', icon: Smartphone, level: 88 },
   ]
 
   const SkillBar: React.FC<{ skill: { name: string; level: number }; delay: number; color: string }> = ({ 
@@ -203,14 +203,14 @@ const SkillsSection: React.FC = () => {
             ))}
           </div>
 
-          {/* Design Tools Section */}
+          {/* Professional Skills Section */}
           <RevealAnimation direction="up" className="mb-16">
             <h3 className="text-3xl font-bold text-center mb-8">
-              Design <span className="gradient-text">Tools</span>
+              Professional <span className="gradient-text">Skills</span>
             </h3>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {designTools.map((tool, index) => (
+              {professionalSkills.map((tool, index) => (
                 <motion.div
                   key={tool.name}
                   className="text-center p-6 glass-effect rounded-xl hover:bg-white/10 transition-all duration-300 group cursor-pointer"
@@ -248,10 +248,10 @@ const SkillsSection: React.FC = () => {
           <RevealAnimation direction="up" className="text-center">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { title: 'AWS Certified', subtitle: 'Cloud Practitioner', icon: '☁️' },
-                { title: 'Google Analytics', subtitle: 'Certified', icon: '📊' },
-                { title: '5+ Years', subtitle: 'Experience', icon: '🚀' },
-                { title: '50+ Projects', subtitle: 'Completed', icon: '✨' },
+                { title: 'Hack The Box', subtitle: 'Academy (In Progress)', icon: '🛡️' },
+                { title: 'Illinois Pesticide', subtitle: 'Applicator License', icon: '🌱' },
+                { title: '4+ Years', subtitle: 'Management Experience', icon: '🚀' },
+                { title: 'NASA Hackathon', subtitle: 'Winner', icon: '🏆' },
               ].map((item, index) => (
                 <motion.div
                   key={item.title}

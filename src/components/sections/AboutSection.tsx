@@ -8,17 +8,17 @@ import { fadeInUp, staggerContainer, scaleIn } from '@/utils/animations'
 
 const AboutSection: React.FC = () => {
   const skills = [
-    { icon: Code, title: 'Frontend Development', description: 'React, Next.js, TypeScript, Tailwind CSS' },
-    { icon: Palette, title: 'UI/UX Design', description: 'Figma, Adobe Creative Suite, Prototyping' },
-    { icon: Zap, title: '3D & Animation', description: 'Three.js, GSAP, Framer Motion, WebGL' },
-    { icon: Users, title: 'Collaboration', description: 'Agile, Git, Team Leadership, Communication' },
+    { icon: Code, title: 'Programming', description: 'Java, HTML, System Troubleshooting, PC/Mac Platforms' },
+    { icon: Palette, title: 'Technical Skills', description: 'Microsoft Office Suite, Application Installation, System Upgrades' },
+    { icon: Zap, title: 'Machine Learning', description: 'TensorFlow, Keras, LSTM Networks, AWS Bedrock' },
+    { icon: Users, title: 'Leadership', description: 'Team Management, Project Management, Communication, Customer Service' },
   ]
 
   const stats = [
-    { number: '50+', label: 'Projects Delivered', color: 'text-neon-green' },
-    { number: '5+', label: 'Years Experience', color: 'text-electric-blue' },
-    { number: '15+', label: 'Happy Clients', color: 'text-cyber-pink' },
-    { number: '1000+', label: 'Cups of Coffee', color: 'text-yellow-400' },
+    { number: '2026', label: 'CS Graduation', color: 'text-neon-green' },
+    { number: '4+', label: 'Years Experience', color: 'text-electric-blue' },
+    { number: '3', label: 'Management Roles', color: 'text-cyber-pink' },
+    { number: '1', label: 'NASA Hackathon Win', color: 'text-yellow-400' },
   ]
 
   return (
@@ -71,23 +71,23 @@ const AboutSection: React.FC = () => {
             <RevealAnimation direction="left" className="space-y-6">
               <div className="space-y-6 text-lg text-gray-300 leading-relaxed">
                 <p>
-                  I'm a <span className="text-neon-green font-semibold">creative developer</span> with 
-                  a passion for crafting immersive digital experiences. My journey began with a 
-                  fascination for the intersection of <span className="text-electric-blue font-semibold">art and technology</span>, 
-                  leading me to specialize in cutting-edge web technologies.
+                  I'm <span className="text-neon-green font-semibold">James Guadagnoli</span>, a Computer Science student at 
+                  Colorado State University with a unique background bridging <span className="text-electric-blue font-semibold">horticulture and technology</span>. 
+                  My journey from managing plant cultivation operations to developing software solutions has given me 
+                  a distinctive perspective on <span className="text-cyber-pink font-semibold">problem-solving and systems thinking</span>.
                 </p>
                 
                 <p>
-                  With expertise in <span className="text-cyber-pink font-semibold">React, Three.js, and advanced animations</span>, 
-                  I transform complex ideas into intuitive, visually stunning interfaces. I believe 
-                  that great design isn't just about how something looks—it's about how it feels 
-                  and functions.
+                  Currently pursuing my CS degree (graduating May 2026), I bring hands-on experience in 
+                  <span className="text-neon-green font-semibold">Java, HTML, and system troubleshooting</span>. My professional background includes 
+                  managing cultivation operations, leading teams, and designing controlled environments—skills that 
+                  translate perfectly to <span className="text-electric-blue font-semibold">software development and project management</span>.
                 </p>
                 
                 <p>
-                  When I'm not coding, you'll find me exploring new technologies, contributing to 
-                  open-source projects, or experimenting with <span className="text-yellow-400 font-semibold">generative art</span> 
-                  and interactive installations.
+                  Recently, I had the honor of participating in the <span className="text-yellow-400 font-semibold">CSU NASA Hackathon</span>, 
+                  where my team won the award for the most simplistic and easy-to-implement model. We developed 
+                  autonomous navigation solutions using A* algorithms and machine learning with TensorFlow and AWS tools.
                 </p>
               </div>
 
