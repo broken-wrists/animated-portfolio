@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Navigation from '@/components/ui/Navigation'
-import GrassFieldHero from '@/components/sections/GrassFieldHero'
+import InteractiveParallaxHero from '@/components/sections/InteractiveParallaxHero'
 import HeroSection from '@/components/sections/HeroSection'
 import AboutSection from '@/components/sections/AboutSection'
 import ProjectsSection from '@/components/sections/ProjectsSection'
@@ -103,7 +103,7 @@ export default function HomePage() {
           <Navigation />
 
           {/* Page Sections */}
-          <GrassFieldHero />
+          <InteractiveParallaxHero />
           <HeroSection />
           <AboutSection />
           <ProjectsSection />
