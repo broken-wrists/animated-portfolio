@@ -32,6 +32,13 @@ body {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000;
+  /* Hide default cursor globally - UltraCursor will handle it */
+  cursor: none !important;
+}
+
+/* Ensure cursor is hidden on all elements */
+*, *::before, *::after {
+  cursor: none !important;
 }
 
 /* Custom scrollbar */

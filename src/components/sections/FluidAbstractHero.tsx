@@ -238,7 +238,6 @@ const FluidAbstractHero: React.FC = () => {
     <section 
       ref={containerRef}
       className="relative w-full h-screen bg-black overflow-hidden"
-      style={{ cursor: 'none' }}
     >
       {/* Ambient background gradient */}
       <div 

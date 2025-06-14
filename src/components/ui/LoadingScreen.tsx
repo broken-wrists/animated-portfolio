@@ -31,7 +31,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onComplete }) => {
     <AnimatePresence>
       {!isComplete && (
         <motion.div
-          className="fixed inset-0 z-[9999] bg-dark-bg flex items-center justify-center"
+          className="fixed inset-0 z-[9000] bg-dark-bg flex items-center justify-center"
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
         >

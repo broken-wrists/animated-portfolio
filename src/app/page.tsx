@@ -116,8 +116,18 @@ export default function HomePage() {
       {/* Loading Screen */}
       <LoadingScreen onComplete={() => setIsLoading(false)} />
 
-      {/* Ultra-Optimized Cursor */}
-      {!isLoading && <UltraCursor />}
+      {/* Ultra-Optimized Cursor - Always render after loading */}
+      <UltraCursor />
+      
+      {/* Debug: Add visual indicator */}
+      {!isLoading && (
+        <div 
+          className="fixed top-4 right-4 z-[999990] bg-green-500 text-black p-2 text-xs rounded opacity-50 pointer-events-none"
+          style={{ display: 'none' }} // Hidden by default, enable for debugging
+        >
+          UltraCursor Active
+        </div>
+      )}
 
       {/* Main Content */}
       {!isLoading && (
