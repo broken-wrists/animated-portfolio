@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMousePosition } from '@/hooks/useMousePosition'
+import { useAnimationManager } from '@/hooks/useAnimationManager'
 
 interface CursorState {
   isHovering: boolean
@@ -13,7 +14,8 @@ interface CursorState {
 }
 
 const CustomCursor: React.FC = () => {
-  const mousePosition = useMousePosition()
+  const mousePosition = useMousePosition(8) // Ultra-smooth tracking
+  const { subscribe } = useAnimationManager()
   const [cursorState, setCursorState] = useState<CursorState>({
     isHovering: false,
     cursorType: 'default',
@@ -23,6 +25,9 @@ const CustomCursor: React.FC = () => {
   const [dynamicColor, setDynamicColor] = useState('#39ff14')
   const [isVisible, setIsVisible] = useState(false)
   const lastUpdateRef = useRef(0)
+  const cursorPositionRef = useRef({ x: 0, y: 0 })
+  const trailPositionRef = useRef({ x: 0, y: 0 })
+  const [, setRenderTrigger] = useState(0)
 
   useEffect(() => {
     const handleMouseEnter = () => setIsVisible(true)
@@ -30,12 +35,11 @@ const CustomCursor: React.FC = () => {
 
     const handleElementHover = (e: MouseEvent) => {
       const now = Date.now()
-      if (now - lastUpdateRef.current < 16) return // Throttle to ~60fps
+      if (now - lastUpdateRef.current < 32) return // Throttle to ~30fps for hover detection
       lastUpdateRef.current = now
       
       const target = e.target as HTMLElement
       
-      // Check for specific elements and set cursor state accordingly
       if (target.tagName === 'A' || target.closest('a')) {
         setCursorState({
           isHovering: true,
@@ -94,14 +98,12 @@ const CustomCursor: React.FC = () => {
       })
     }
 
-    // Add event listeners to document with passive option
     const options: AddEventListenerOptions = { passive: true }
     document.addEventListener('mouseenter', handleMouseEnter, options)
     document.addEventListener('mouseleave', handleMouseLeave, options)
     document.addEventListener('mouseover', handleElementHover, options)
     document.addEventListener('mouseout', handleElementLeave, options)
 
-    // Hide default cursor
     document.body.style.cursor = 'none'
     
     return () => {
@@ -113,61 +115,65 @@ const CustomCursor: React.FC = () => {
     }
   }, [dynamicColor])
 
-  // Dynamic color shifting effect
+  // Optimized animation loop with centralized management
   useEffect(() => {
     const colorPalette = [
-      '#39ff14', // neon green
-      '#00ff88', // mint green
-      '#00ffcc', // cyan
-      '#00ccff', // light blue
-      '#007fff', // electric blue
-      '#0044ff', // deep blue
-      '#4400ff', // purple blue
-      '#8800ff', // purple
-      '#cc00ff', // magenta
-      '#ff00cc', // pink
-      '#ff0088', // hot pink
-      '#ff0044', // red pink
-      '#ff4400', // orange red
-      '#ff8800', // orange
-      '#ffcc00', // yellow orange
-      '#ccff00', // lime
-      '#88ff00', // light green
-      '#44ff00', // bright green
+      '#39ff14', '#00ff88', '#00ffcc', '#00ccff', '#007fff', '#0044ff',
+      '#4400ff', '#8800ff', '#cc00ff', '#ff00cc', '#ff0088', '#ff0044',
+      '#ff4400', '#ff8800', '#ffcc00', '#ccff00', '#88ff00', '#44ff00'
     ]
-
-    let colorIndex = 0
-    const colorShiftInterval = setInterval(() => {
-      if (!cursorState.isHovering) {
-        setDynamicColor(colorPalette[colorIndex])
-        colorIndex = (colorIndex + 1) % colorPalette.length
-      }
-    }, 150) // Change color every 150ms for smooth transitions
-
-    return () => clearInterval(colorShiftInterval)
-  }, [cursorState.isHovering])
-
-  // Mouse movement color changes - throttled
-  useEffect(() => {
-    let lastMoveTime = Date.now()
     
-    const handleMouseMove = () => {
-      const now = Date.now()
-      const timeDiff = now - lastMoveTime
-      
-      if (timeDiff > 100 && !cursorState.isHovering) { // Increased throttle to 100ms
-        const colors = ['#39ff14', '#007fff', '#ff1493', '#4a0080', '#00ffcc', '#ff8800']
-        const randomColor = colors[Math.floor(Math.random() * colors.length)]
-        setDynamicColor(randomColor)
-      }
-      
-      lastMoveTime = now
-    }
+    let colorIndex = 0
+    let frameCount = 0
+    
+    const unsubscribe = subscribe(
+      () => {
+        frameCount++
+        
+        // Ultra-smooth cursor following with different easing
+        const mainLerp = 0.25
+        const trailLerp = 0.1
+        
+        cursorPositionRef.current = {
+          x: cursorPositionRef.current.x + (mousePosition.x - cursorPositionRef.current.x) * mainLerp,
+          y: cursorPositionRef.current.y + (mousePosition.y - cursorPositionRef.current.y) * mainLerp
+        }
+        
+        trailPositionRef.current = {
+          x: trailPositionRef.current.x + (mousePosition.x - trailPositionRef.current.x) * trailLerp,
+          y: trailPositionRef.current.y + (mousePosition.y - trailPositionRef.current.y) * trailLerp
+        }
+        
+        // Color cycling every 9 frames
+        if (frameCount % 9 === 0 && !cursorState.isHovering) {
+          setDynamicColor(colorPalette[colorIndex])
+          colorIndex = (colorIndex + 1) % colorPalette.length
+        }
+        
+        // Force re-render for smooth visual updates
+        setRenderTrigger(prev => prev + 1)
+      },
+      3, // Highest priority
+      120 // Target 120 FPS for ultra-smooth cursor
+    )
+    
+    return unsubscribe
+  }, [subscribe, cursorState.isHovering, mousePosition.x, mousePosition.y])
 
-    const options: AddEventListenerOptions = { passive: true }
-    document.addEventListener('mousemove', handleMouseMove, options)
-    return () => document.removeEventListener('mousemove', handleMouseMove)
-  }, [cursorState.isHovering])
+  // Velocity-based color changes
+  const updateColorFromVelocity = useCallback(() => {
+    const velocity = Math.sqrt(mousePosition.velocityX ** 2 + mousePosition.velocityY ** 2)
+    
+    if (velocity > 200 && !cursorState.isHovering) {
+      const colors = ['#39ff14', '#007fff', '#ff1493', '#4a0080', '#00ffcc', '#ff8800']
+      const randomColor = colors[Math.floor(Math.random() * colors.length)]
+      setDynamicColor(randomColor)
+    }
+  }, [mousePosition.velocityX, mousePosition.velocityY, cursorState.isHovering])
+  
+  useEffect(() => {
+    updateColorFromVelocity()
+  }, [updateColorFromVelocity])
 
   // Hide cursor on mobile
   useEffect(() => {
@@ -181,156 +187,66 @@ const CustomCursor: React.FC = () => {
 
   const currentColor = cursorState.isHovering ? cursorState.color : dynamicColor
 
-  const cursorVariants = {
-    default: {
-      scale: cursorState.scale,
-      backgroundColor: currentColor,
-      mixBlendMode: 'difference' as const,
-      boxShadow: `0 0 20px ${currentColor}40`,
-    },
-    hover: {
-      scale: cursorState.scale,
-      backgroundColor: cursorState.color,
-      mixBlendMode: 'difference' as const,
-      boxShadow: `0 0 30px ${cursorState.color}60`,
-    }
-  }
-
   return (
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Main Cursor */}
-          <motion.div
+          {/* Main Cursor - Now using native div for better performance */}
+          <div
             className="fixed pointer-events-none z-[9999] rounded-full"
             style={{
-              left: mousePosition.x - 16,
-              top: mousePosition.y - 16,
-              willChange: 'transform',
-            }}
-            variants={cursorVariants}
-            animate={cursorState.isHovering ? 'hover' : 'default'}
-            transition={{
-              type: 'spring',
-              stiffness: 400,
-              damping: 35,
-              mass: 0.3,
-            }}
-            initial={{
+              left: cursorPositionRef.current.x - 16,
+              top: cursorPositionRef.current.y - 16,
               width: 32,
               height: 32,
-              scale: 0,
-              backgroundColor: cursorState.color,
+              backgroundColor: currentColor,
+              mixBlendMode: 'difference',
+              boxShadow: `0 0 20px ${currentColor}40`,
+              transform: `scale(${cursorState.scale})`,
+              willChange: 'transform',
+              transition: 'transform 0.15s ease, background-color 0.1s ease',
+              backfaceVisibility: 'hidden',
             }}
           >
             {/* Inner dot */}
-            <motion.div
+            <div
               className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white rounded-full"
-              animate={{
-                scale: cursorState.isHovering ? 0 : 1,
-                opacity: cursorState.isHovering ? 0 : 1,
-              }}
-              transition={{ duration: 0.2 }}
-            />
-
-            {/* Ripple effect */}
-            <motion.div
-              className="absolute inset-0 rounded-full border border-current"
-              animate={{
-                scale: [1, 2, 1],
-                opacity: [0.8, 0, 0.8],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: 'easeInOut',
-              }}
-            />
-
-            {/* Color gradient overlay */}
-            <motion.div
-              className="absolute inset-0 rounded-full"
               style={{
-                background: `linear-gradient(45deg, ${currentColor}, transparent, ${currentColor})`
-              }}
-              animate={{
-                rotate: 360,
-                opacity: [0.3, 0.6, 0.3],
-              }}
-              transition={{
-                rotate: {
-                  duration: 3,
-                  repeat: Infinity,
-                  ease: 'linear',
-                },
-                opacity: {
-                  duration: 1.5,
-                  repeat: Infinity,
-                  ease: 'easeInOut',
-                }
+                opacity: cursorState.isHovering ? 0 : 1,
+                transform: `scale(${cursorState.isHovering ? 0 : 1})`,
+                transition: 'opacity 0.15s ease, transform 0.15s ease'
               }}
             />
-          </motion.div>
+          </div>
 
-          {/* Cursor Trail */}
-          <motion.div
-            className="fixed pointer-events-none z-[9998] rounded-full opacity-40"
+          {/* Cursor Trail - Optimized */}
+          <div
+            className="fixed pointer-events-none z-[9998] rounded-full opacity-30"
             style={{
-              left: mousePosition.x - 8,
-              top: mousePosition.y - 8,
+              left: trailPositionRef.current.x - 8,
+              top: trailPositionRef.current.y - 8,
               width: 16,
               height: 16,
               backgroundColor: currentColor,
-              boxShadow: `0 0 15px ${currentColor}80`,
+              boxShadow: `0 0 15px ${currentColor}60`,
               willChange: 'transform',
-            }}
-            transition={{
-              type: 'spring',
-              stiffness: 120,
-              damping: 25,
-              mass: 0.8,
+              backfaceVisibility: 'hidden',
             }}
           />
 
-          {/* Secondary trail with different color */}
-          <motion.div
-            className="fixed pointer-events-none z-[9997] rounded-full opacity-20"
+          {/* Secondary trail */}
+          <div
+            className="fixed pointer-events-none z-[9997] rounded-full opacity-15"
             style={{
-              left: mousePosition.x - 6,
-              top: mousePosition.y - 6,
+              left: trailPositionRef.current.x - 6,
+              top: trailPositionRef.current.y - 6,
               width: 12,
               height: 12,
               backgroundColor: cursorState.isHovering ? cursorState.color : '#ffffff',
               willChange: 'transform',
-            }}
-            transition={{
-              type: 'spring',
-              stiffness: 80,
-              damping: 30,
-              mass: 1.2,
+              backfaceVisibility: 'hidden',
             }}
           />
-
-          {/* Magnification Effect */}
-          {cursorState.cursorType === 'image' && (
-            <motion.div
-              className="fixed pointer-events-none z-[9997]"
-              style={{
-                left: mousePosition.x - 60,
-                top: mousePosition.y - 60,
-              }}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="w-32 h-32 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-neon-green/20 to-electric-blue/20 flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">ZOOM</span>
-                </div>
-              </div>
-            </motion.div>
-          )}
 
           {/* Cursor Text */}
           <AnimatePresence>
@@ -338,8 +254,8 @@ const CustomCursor: React.FC = () => {
               <motion.div
                 className="fixed pointer-events-none z-[9996] text-white text-xs font-bold uppercase tracking-wider"
                 style={{
-                  left: mousePosition.x + 30,
-                  top: mousePosition.y - 10,
+                  left: cursorPositionRef.current.x + 30,
+                  top: cursorPositionRef.current.y - 10,
                 }}
                 initial={{ opacity: 0, scale: 0.8, y: 10 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -352,62 +268,6 @@ const CustomCursor: React.FC = () => {
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Color Ring Indicator */}
-          <motion.div
-            className="fixed pointer-events-none z-[9995] rounded-full border-2"
-            style={{
-              left: mousePosition.x - 24,
-              top: mousePosition.y - 24,
-              width: 48,
-              height: 48,
-              borderColor: currentColor,
-              background: `conic-gradient(from 0deg, ${currentColor}40, transparent, ${currentColor}40)`,
-            }}
-            animate={{
-              rotate: 360,
-              scale: cursorState.isHovering ? 1.5 : 1,
-            }}
-            transition={{
-              rotate: {
-                duration: 8,
-                repeat: Infinity,
-                ease: 'linear',
-              },
-              scale: {
-                duration: 0.3,
-                ease: 'easeOut',
-              },
-            }}
-          />
-
-          {/* Particle Effects */}
-          {cursorState.isHovering && (
-            <div className="fixed pointer-events-none z-[9994]">
-              {[...Array(6)].map((_, i) => (
-                <motion.div
-                  key={i}
-                  className="absolute w-1 h-1 rounded-full"
-                  style={{
-                    left: mousePosition.x,
-                    top: mousePosition.y,
-                    backgroundColor: currentColor,
-                  }}
-                  animate={{
-                    x: [0, (Math.cos(i * 60 * Math.PI / 180) * 30)],
-                    y: [0, (Math.sin(i * 60 * Math.PI / 180) * 30)],
-                    opacity: [1, 0],
-                    scale: [1, 0],
-                  }}
-                  transition={{
-                    duration: 0.8,
-                    repeat: Infinity,
-                    ease: 'easeOut',
-                  }}
-                />
-              ))}
-            </div>
-          )}
         </>
       )}
     </AnimatePresence>

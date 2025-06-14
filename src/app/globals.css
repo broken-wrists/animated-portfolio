@@ -25,6 +25,13 @@ body {
   color: #ffffff;
   overflow-x: hidden;
   line-height: 1.6;
+  /* Performance optimizations */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
 }
 
 /* Custom scrollbar */
@@ -159,4 +166,29 @@ body {
 @keyframes loading-dots2 {
   0% { transform: translate(0, 0); }
   100% { transform: translate(24px, 0); }
+}
+
+/* Performance optimization classes */
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
+}
+
+.smooth-animation {
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  contain: layout style paint;
+}
+
+.no-layout-shift {
+  contain: layout style paint;
+}
+
+/* Force layer creation for smooth animations */
+.layer-creation {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }

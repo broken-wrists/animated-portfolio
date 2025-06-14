@@ -1,7 +1,9 @@
 'use client'
 
-import React, { useRef, useEffect, useState, useCallback } from 'react'
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { useMousePosition } from '@/hooks/useMousePosition'
+import { useAnimationManager } from '@/hooks/useAnimationManager'
+import { usePerformance } from '@/hooks/usePerformance'
 
 interface FloatingShape {
   id: number
@@ -22,139 +24,115 @@ interface FloatingShape {
 
 const FluidAbstractHero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const mousePosition = useMousePosition()
-  const animationFrameRef = useRef<number>()
-  const [shapes, setShapes] = useState<FloatingShape[]>([])
-  const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 })
-  const [currentOffset, setCurrentOffset] = useState({ x: 0, y: 0 })
-  const [isMobile, setIsMobile] = useState(false)
-  const [isLowPerformance, setIsLowPerformance] = useState(false)
+  const mousePosition = useMousePosition(20) // Throttle to 50fps for mouse
+  const { subscribe } = useAnimationManager()
+  const performance = usePerformance()
   
-  // Detect mobile device and performance level
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth < 768 || 'ontouchstart' in window
-      setIsMobile(mobile)
-      
-      // Detect low performance devices
-      const isLowPerf = mobile || 
-        (navigator as any).hardwareConcurrency < 4 || 
-        (navigator as any).deviceMemory < 4
-      setIsLowPerformance(isLowPerf)
-    }
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+  const shapesRef = useRef<FloatingShape[]>([])
+  const currentOffsetRef = useRef({ x: 0, y: 0 })
+  const [, setRenderTrigger] = useState(0)
+  
+  // Use refs for values that change frequently to avoid re-renders
+  const mouseOffsetRef = useRef({ x: 0, y: 0 })
 
-  // Initialize floating shapes
-  const initializeShapes = useCallback(() => {
+  // Memoized shapes configuration
+  const shapesConfig = useMemo(() => {
     const shapeTypes: FloatingShape['type'][] = ['blob', 'circle', 'gradient', 'ring']
     const colors = [
-      'rgba(59, 130, 246, 0.85)',   // Blue - increased opacity
-      'rgba(147, 51, 234, 0.8)',    // Purple - increased opacity
-      'rgba(16, 185, 129, 0.75)',   // Emerald - increased opacity
-      'rgba(245, 158, 11, 0.8)',    // Amber - increased opacity
-      'rgba(236, 72, 153, 0.75)',   // Pink - increased opacity
-      'rgba(99, 102, 241, 0.8)',    // Indigo - increased opacity
-      'rgba(6, 182, 212, 0.75)',    // Cyan - increased opacity
-      'rgba(139, 92, 246, 0.8)',    // Violet - increased opacity
+      'rgba(59, 130, 246, 0.85)',
+      'rgba(147, 51, 234, 0.8)',
+      'rgba(16, 185, 129, 0.75)',
+      'rgba(245, 158, 11, 0.8)',
+      'rgba(236, 72, 153, 0.75)',
+      'rgba(99, 102, 241, 0.8)',
+      'rgba(6, 182, 212, 0.75)',
+      'rgba(139, 92, 246, 0.8)',
     ]
 
-    const newShapes: FloatingShape[] = []
+    const shapeCount = performance.isLowPerformance ? 4 : 8 // Further reduced
+    const shapes: FloatingShape[] = []
     
-    const shapeCount = isLowPerformance ? 6 : 12 // Reduce shapes on low performance devices
     for (let i = 0; i < shapeCount; i++) {
-      newShapes.push({
+      shapes.push({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
-        depth: 0.1 + Math.random() * 0.8, // 0.1 to 0.9
-        scale: 0.8 + Math.random() * 1.8, // 0.8 to 2.6 - larger shapes
-        blur: isLowPerformance ? Math.random() * 6 + 2 : Math.random() * 12 + 3, // Reduce blur on low performance
-        opacity: 0.6 + Math.random() * 0.4, // 0.6 to 1.0 - much higher opacity
+        depth: 0.1 + Math.random() * 0.8,
+        scale: 0.8 + Math.random() * 1.8,
+        blur: performance.isLowPerformance ? Math.random() * 4 + 1 : Math.random() * 8 + 2,
+        opacity: 0.6 + Math.random() * 0.4,
         rotation: Math.random() * 360,
-        rotationSpeed: (Math.random() - 0.5) * 0.5, // -0.25 to 0.25
-        oscillationX: Math.random() * 40 + 20, // 20 to 60
-        oscillationY: Math.random() * 30 + 15, // 15 to 45
-        oscillationSpeed: 0.001 + Math.random() * 0.002, // 0.001 to 0.003
+        rotationSpeed: (Math.random() - 0.5) * 0.3, // Slower rotation
+        oscillationX: Math.random() * 30 + 15, // Reduced oscillation
+        oscillationY: Math.random() * 20 + 10,
+        oscillationSpeed: 0.0005 + Math.random() * 0.001, // Slower oscillation
         color: colors[Math.floor(Math.random() * colors.length)],
         type: shapeTypes[Math.floor(Math.random() * shapeTypes.length)]
       })
     }
     
-    setShapes(newShapes)
-  }, [])
+    return shapes
+  }, [performance.isLowPerformance])
 
-  // Initialize shapes on mount
+  // Initialize shapes
   useEffect(() => {
-    initializeShapes()
-  }, [initializeShapes])
+    shapesRef.current = shapesConfig
+    setRenderTrigger(prev => prev + 1)
+  }, [shapesConfig])
 
-  // Calculate mouse offset for parallax (desktop only)
+  // Calculate mouse offset for parallax - optimized with refs
   useEffect(() => {
-    if (!isMobile) {
+    if (!performance.isMobile) {
       const centerX = window.innerWidth / 2
       const centerY = window.innerHeight / 2
       
-      const offsetX = (mousePosition.x - centerX) * 0.3
-      const offsetY = (mousePosition.y - centerY) * 0.3
+      const sensitivity = performance.isLowPerformance ? 0.15 : 0.25 // Reduced sensitivity
+      const offsetX = (mousePosition.x - centerX) * sensitivity
+      const offsetY = (mousePosition.y - centerY) * sensitivity
       
-      setMouseOffset({ x: offsetX, y: offsetY })
+      mouseOffsetRef.current = { x: offsetX, y: offsetY }
     }
-  }, [mousePosition, isMobile])
+  }, [mousePosition.x, mousePosition.y, performance.isMobile, performance.isLowPerformance])
 
-  // Smooth animation loop with performance optimization
+  // Centralized animation loop using animation manager
   useEffect(() => {
     let frameCount = 0
-    const targetFPS = isLowPerformance ? 30 : 60
-    const frameInterval = 1000 / targetFPS
-    let lastTime = 0
+    const updateInterval = performance.isLowPerformance ? 3 : 2 // Update every 2-3 frames
     
-    const animate = (currentTime: number) => {
-      if (currentTime - lastTime < frameInterval) {
-        animationFrameRef.current = requestAnimationFrame(animate)
-        return
-      }
-      
-      lastTime = currentTime
-      frameCount++
-      
-      // Update mouse offset less frequently on low performance devices
-      if (frameCount % (isLowPerformance ? 2 : 1) === 0) {
-        if (!isMobile) {
-          setCurrentOffset(prev => ({
-            x: prev.x + (mouseOffset.x - prev.x) * (isLowPerformance ? 0.05 : 0.02),
-            y: prev.y + (mouseOffset.y - prev.y) * (isLowPerformance ? 0.05 : 0.02)
-          }))
+    const unsubscribe = subscribe(
+      (timestamp: number) => {
+        frameCount++
+        
+        // Update mouse following
+        if (!performance.isMobile && frameCount % 2 === 0) {
+          const lerpFactor = performance.isLowPerformance ? 0.08 : 0.05
+          currentOffsetRef.current = {
+            x: currentOffsetRef.current.x + (mouseOffsetRef.current.x - currentOffsetRef.current.x) * lerpFactor,
+            y: currentOffsetRef.current.y + (mouseOffsetRef.current.y - currentOffsetRef.current.y) * lerpFactor
+          }
         }
-      }
-      
-      // Update shape animations less frequently on low performance
-      if (frameCount % (isLowPerformance ? 3 : 1) === 0) {
-        setShapes(prevShapes => 
-          prevShapes.map(shape => ({
+        
+        // Update shape animations less frequently
+        if (frameCount % updateInterval === 0) {
+          shapesRef.current = shapesRef.current.map(shape => ({
             ...shape,
             rotation: shape.rotation + shape.rotationSpeed,
-            oscillationX: Math.sin(currentTime * shape.oscillationSpeed) * (isLowPerformance ? 10 : 20),
-            oscillationY: Math.cos(currentTime * shape.oscillationSpeed * 0.7) * (isLowPerformance ? 8 : 15)
+            oscillationX: Math.sin(timestamp * shape.oscillationSpeed) * (performance.isLowPerformance ? 8 : 15),
+            oscillationY: Math.cos(timestamp * shape.oscillationSpeed * 0.7) * (performance.isLowPerformance ? 6 : 12)
           }))
-        )
-      }
-      
-      animationFrameRef.current = requestAnimationFrame(animate)
-    }
+          
+          // Trigger re-render only when needed
+          setRenderTrigger(prev => prev + 1)
+        }
+      },
+      1, // High priority
+      performance.isLowPerformance ? 30 : 45 // Reduced target FPS
+    )
     
-    animationFrameRef.current = requestAnimationFrame(animate)
-    
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current)
-      }
-    }
-  }, [mouseOffset, isMobile, isLowPerformance])
+    return unsubscribe
+  }, [subscribe, performance.isMobile, performance.isLowPerformance])
 
-  // Calculate transform for each shape
+  // Memoized transform calculator
   const getShapeTransform = useCallback((shape: FloatingShape) => {
     const baseX = shape.x
     const baseY = shape.y
@@ -162,28 +140,28 @@ const FluidAbstractHero: React.FC = () => {
     let moveX = 0
     let moveY = 0
     
-    if (isMobile) {
-      // Mobile: gentle floating animation
-      moveX = shape.oscillationX * 0.5
-      moveY = shape.oscillationY * 0.5
+    if (performance.isMobile) {
+      moveX = shape.oscillationX * 0.3
+      moveY = shape.oscillationY * 0.3
     } else {
-      // Desktop: mouse-based parallax + oscillation
-      moveX = currentOffset.x * shape.depth + shape.oscillationX * 0.3
-      moveY = currentOffset.y * shape.depth + shape.oscillationY * 0.3
+      moveX = currentOffsetRef.current.x * shape.depth * 0.8 + shape.oscillationX * 0.2
+      moveY = currentOffsetRef.current.y * shape.depth * 0.8 + shape.oscillationY * 0.2
     }
     
     return `translate3d(${baseX}vw, ${baseY}vh, 0) translate3d(${moveX}px, ${moveY}px, 0) scale(${shape.scale}) rotate(${shape.rotation}deg)`
-  }, [currentOffset, isMobile])
+  }, [performance.isMobile])
 
-  // Render different shape types
-  const renderShape = (shape: FloatingShape) => {
+  // Optimized shape renderer
+  const renderShape = useCallback((shape: FloatingShape) => {
     const baseStyle = {
       transform: getShapeTransform(shape),
-      filter: isLowPerformance ? 
+      filter: performance.isLowPerformance ? 
         `blur(${shape.blur}px)` : 
-        `blur(${shape.blur}px) drop-shadow(0 0 30px ${shape.color}) drop-shadow(0 0 60px ${shape.color})`,
+        `blur(${shape.blur}px) drop-shadow(0 0 20px ${shape.color})`,
       opacity: shape.opacity,
-      transition: isMobile ? 'none' : 'transform 0.1s ease-out'
+      willChange: 'transform',
+      backfaceVisibility: 'hidden' as const,
+      perspective: 1000,
     }
 
     switch (shape.type) {
@@ -254,7 +232,7 @@ const FluidAbstractHero: React.FC = () => {
       default:
         return null
     }
-  }
+  }, [getShapeTransform, performance.isLowPerformance])
 
   return (
     <section 
@@ -276,9 +254,9 @@ const FluidAbstractHero: React.FC = () => {
         }}
       />
       
-      {/* Floating shapes */}
+      {/* Floating shapes - memoized render */}
       <div className="absolute inset-0">
-        {shapes.map(renderShape)}
+        {shapesRef.current.map(renderShape)}
       </div>
       
       {/* Enhanced depth layers */}
@@ -291,7 +269,7 @@ const FluidAbstractHero: React.FC = () => {
             radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.05) 0%, transparent 35%),
             radial-gradient(circle at 15% 80%, rgba(139, 92, 246, 0.04) 0%, transparent 30%)
           `,
-          transform: `translate3d(${currentOffset.x * 0.1}px, ${currentOffset.y * 0.1}px, 0)`
+          transform: `translate3d(${currentOffsetRef.current.x * 0.08}px, ${currentOffsetRef.current.y * 0.08}px, 0)`
         }}
       />
 
@@ -299,7 +277,7 @@ const FluidAbstractHero: React.FC = () => {
       <div 
         className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none"
         style={{
-          transform: `translate3d(${currentOffset.x * 0.05}px, ${currentOffset.y * 0.05}px, 0)`
+          transform: `translate3d(${currentOffsetRef.current.x * 0.03}px, ${currentOffsetRef.current.y * 0.03}px, 0)`
         }}
       >
         <h1 
@@ -341,7 +319,7 @@ const FluidAbstractHero: React.FC = () => {
       `}</style>
       
       {/* Custom cursor for desktop */}
-      {!isMobile && (
+      {!performance.isMobile && (
         <div
           className="fixed pointer-events-none z-50 rounded-full border border-white/20"
           style={{
