@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { useMousePosition } from '@/hooks/useMousePosition'
+import { usePerformance } from '@/hooks/usePerformance'
 
 interface FloatingElement {
   id: number
@@ -17,11 +18,16 @@ interface FloatingElement {
 const InteractiveParallaxHero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
   const mousePosition = useMousePosition()
+  const performance = usePerformance()
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 })
 
-  // Floating elements configuration
-  const floatingElements: FloatingElement[] = [
+  // Floating elements configuration - optimized for performance
+  const floatingElements: FloatingElement[] = performance.isLowPerformance ? [
+    { id: 1, content: '🌟', speed: 0.3, x: 10, y: 15, size: 1.5, delay: 0 },
+    { id: 2, content: '⚡', speed: 0.2, x: 85, y: 70, size: 1.5, delay: 1 },
+    { id: 3, content: '🔮', speed: 0.4, x: 80, y: 25, size: 1.5, delay: 0.5 }
+  ] : [
     { id: 1, content: '🌟', speed: 0.5, x: 10, y: 15, size: 2, delay: 0 },
     { id: 2, content: '⚡', speed: 0.3, x: 85, y: 70, size: 2, delay: 2 },
     { id: 3, content: '🔮', speed: 0.7, x: 80, y: 25, size: 2, delay: 1 },
@@ -45,24 +51,25 @@ const InteractiveParallaxHero: React.FC = () => {
     return () => window.removeEventListener('resize', updateDimensions)
   }, [])
 
-  // Calculate mouse offset for parallax
+  // Calculate mouse offset for parallax - optimized
   useEffect(() => {
-    if (dimensions.width && dimensions.height) {
+    if (dimensions.width && dimensions.height && !performance.isMobile) {
       // Convert mouse position to center-based coordinates
       const centerX = dimensions.width / 2
       const centerY = dimensions.height / 2
       
-      const offsetX = (mousePosition.x - centerX) * 0.5 // Sensitivity factor
-      const offsetY = (mousePosition.y - centerY) * 0.5
+      const sensitivity = performance.isLowPerformance ? 0.3 : 0.5
+      const offsetX = (mousePosition.x - centerX) * sensitivity
+      const offsetY = (mousePosition.y - centerY) * sensitivity
       
       // Limit movement to prevent elements going too far off-screen
-      const maxMovement = 50
+      const maxMovement = performance.isLowPerformance ? 30 : 50
       const limitedX = Math.max(-maxMovement, Math.min(maxMovement, offsetX))
       const limitedY = Math.max(-maxMovement, Math.min(maxMovement, offsetY))
       
       setMouseOffset({ x: limitedX, y: limitedY })
     }
-  }, [mousePosition, dimensions])
+  }, [mousePosition, dimensions, performance])
 
   // Calculate parallax transform for an element
   const getParallaxTransform = useCallback((speed: number) => {
@@ -125,13 +132,13 @@ const InteractiveParallaxHero: React.FC = () => {
           }}
         >
           <motion.span
-            animate={{ 
+            animate={performance.reducedMotion ? {} : { 
               y: [0, -20, 0],
               rotate: [0, 5, -5, 0]
             }}
             transition={{
-              duration: 6,
-              repeat: Infinity,
+              duration: performance.isLowPerformance ? 4 : 6,
+              repeat: performance.reducedMotion ? 0 : Infinity,
               ease: "easeInOut",
               delay: element.delay
             }}
@@ -305,8 +312,8 @@ const InteractiveParallaxHero: React.FC = () => {
         </motion.div>
       </div>
 
-      {/* Ambient Particles */}
-      {[...Array(5)].map((_, i) => (
+      {/* Ambient Particles - reduced for performance */}
+      {!performance.isLowPerformance && [...Array(performance.isMobile ? 3 : 5)].map((_, i) => (
         <motion.div
           key={`particle-${i}`}
           className="absolute w-1 h-1 bg-white/60 rounded-full pointer-events-none"
@@ -315,14 +322,14 @@ const InteractiveParallaxHero: React.FC = () => {
             top: `${30 + i * 10}%`,
             transform: getParallaxTransform(0.9 - i * 0.1)
           }}
-          animate={{
+          animate={performance.reducedMotion ? {} : {
             y: [0, -100, 0],
             opacity: [0.6, 1, 0.6],
             scale: [1, 1.2, 1]
           }}
           transition={{
-            duration: 15,
-            repeat: Infinity,
+            duration: performance.isLowPerformance ? 10 : 15,
+            repeat: performance.reducedMotion ? 0 : Infinity,
             ease: "easeInOut",
             delay: i * 3
           }}

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useMousePosition } from '@/hooks/useMousePosition'
 
@@ -22,12 +22,17 @@ const CustomCursor: React.FC = () => {
   })
   const [dynamicColor, setDynamicColor] = useState('#39ff14')
   const [isVisible, setIsVisible] = useState(false)
+  const lastUpdateRef = useRef(0)
 
   useEffect(() => {
     const handleMouseEnter = () => setIsVisible(true)
     const handleMouseLeave = () => setIsVisible(false)
 
     const handleElementHover = (e: MouseEvent) => {
+      const now = Date.now()
+      if (now - lastUpdateRef.current < 16) return // Throttle to ~60fps
+      lastUpdateRef.current = now
+      
       const target = e.target as HTMLElement
       
       // Check for specific elements and set cursor state accordingly
@@ -89,11 +94,12 @@ const CustomCursor: React.FC = () => {
       })
     }
 
-    // Add event listeners to document
-    document.addEventListener('mouseenter', handleMouseEnter)
-    document.addEventListener('mouseleave', handleMouseLeave)
-    document.addEventListener('mouseover', handleElementHover)
-    document.addEventListener('mouseout', handleElementLeave)
+    // Add event listeners to document with passive option
+    const options: AddEventListenerOptions = { passive: true }
+    document.addEventListener('mouseenter', handleMouseEnter, options)
+    document.addEventListener('mouseleave', handleMouseLeave, options)
+    document.addEventListener('mouseover', handleElementHover, options)
+    document.addEventListener('mouseout', handleElementLeave, options)
 
     // Hide default cursor
     document.body.style.cursor = 'none'
@@ -141,7 +147,7 @@ const CustomCursor: React.FC = () => {
     return () => clearInterval(colorShiftInterval)
   }, [cursorState.isHovering])
 
-  // Mouse movement color changes
+  // Mouse movement color changes - throttled
   useEffect(() => {
     let lastMoveTime = Date.now()
     
@@ -149,7 +155,7 @@ const CustomCursor: React.FC = () => {
       const now = Date.now()
       const timeDiff = now - lastMoveTime
       
-      if (timeDiff > 50 && !cursorState.isHovering) { // Only change if not hovering
+      if (timeDiff > 100 && !cursorState.isHovering) { // Increased throttle to 100ms
         const colors = ['#39ff14', '#007fff', '#ff1493', '#4a0080', '#00ffcc', '#ff8800']
         const randomColor = colors[Math.floor(Math.random() * colors.length)]
         setDynamicColor(randomColor)
@@ -158,7 +164,8 @@ const CustomCursor: React.FC = () => {
       lastMoveTime = now
     }
 
-    document.addEventListener('mousemove', handleMouseMove)
+    const options: AddEventListenerOptions = { passive: true }
+    document.addEventListener('mousemove', handleMouseMove, options)
     return () => document.removeEventListener('mousemove', handleMouseMove)
   }, [cursorState.isHovering])
 
@@ -199,14 +206,15 @@ const CustomCursor: React.FC = () => {
             style={{
               left: mousePosition.x - 16,
               top: mousePosition.y - 16,
+              willChange: 'transform',
             }}
             variants={cursorVariants}
             animate={cursorState.isHovering ? 'hover' : 'default'}
             transition={{
               type: 'spring',
-              stiffness: 500,
-              damping: 30,
-              mass: 0.5,
+              stiffness: 400,
+              damping: 35,
+              mass: 0.3,
             }}
             initial={{
               width: 32,
@@ -274,12 +282,13 @@ const CustomCursor: React.FC = () => {
               height: 16,
               backgroundColor: currentColor,
               boxShadow: `0 0 15px ${currentColor}80`,
+              willChange: 'transform',
             }}
             transition={{
               type: 'spring',
-              stiffness: 150,
-              damping: 20,
-              mass: 1,
+              stiffness: 120,
+              damping: 25,
+              mass: 0.8,
             }}
           />
 
@@ -292,12 +301,13 @@ const CustomCursor: React.FC = () => {
               width: 12,
               height: 12,
               backgroundColor: cursorState.isHovering ? cursorState.color : '#ffffff',
+              willChange: 'transform',
             }}
             transition={{
               type: 'spring',
-              stiffness: 100,
-              damping: 25,
-              mass: 1.5,
+              stiffness: 80,
+              damping: 30,
+              mass: 1.2,
             }}
           />
 

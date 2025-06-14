@@ -65,27 +65,50 @@ export default function HomePage() {
     }
   }, [])
 
-  // Progressive enhancement for mobile
+  // Progressive enhancement for mobile and performance
   useEffect(() => {
     const isMobile = window.matchMedia('(max-width: 768px)').matches
     const isLowPerformance = window.matchMedia('(max-width: 768px) and (hover: none)').matches
+    const hardwareConcurrency = (navigator as any).hardwareConcurrency || 4
+    const deviceMemory = (navigator as any).deviceMemory || 4
 
-    if (isMobile || isLowPerformance) {
-      // Reduce particle count and animation complexity on mobile
+    if (isMobile || isLowPerformance || hardwareConcurrency < 4 || deviceMemory < 4) {
+      // Optimize for low performance devices
       document.documentElement.style.setProperty('--mobile-optimized', 'true')
+      document.documentElement.style.setProperty('--animation-duration', '0.3s')
+      document.documentElement.style.setProperty('--particle-count', '5')
+    } else {
+      document.documentElement.style.setProperty('--animation-duration', '0.6s')
+      document.documentElement.style.setProperty('--particle-count', '12')
     }
   }, [])
 
-  // Scroll progress tracking
+  // Scroll progress tracking - throttled for performance
   useEffect(() => {
+    let rafId: number
+    let ticking = false
+    
     const updateScrollProgress = () => {
       const scrollHeight = document.documentElement.scrollHeight - window.innerHeight
       const progress = (window.scrollY / scrollHeight) * 100
       setScrollProgress(Math.min(progress, 100))
+      ticking = false
     }
 
-    window.addEventListener('scroll', updateScrollProgress)
-    return () => window.removeEventListener('scroll', updateScrollProgress)
+    const requestTick = () => {
+      if (!ticking) {
+        rafId = requestAnimationFrame(updateScrollProgress)
+        ticking = true
+      }
+    }
+
+    const options: AddEventListenerOptions = { passive: true }
+    window.addEventListener('scroll', requestTick, options)
+    
+    return () => {
+      window.removeEventListener('scroll', requestTick)
+      if (rafId) cancelAnimationFrame(rafId)
+    }
   }, [])
 
   return (

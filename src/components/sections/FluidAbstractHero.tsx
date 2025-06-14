@@ -28,11 +28,19 @@ const FluidAbstractHero: React.FC = () => {
   const [mouseOffset, setMouseOffset] = useState({ x: 0, y: 0 })
   const [currentOffset, setCurrentOffset] = useState({ x: 0, y: 0 })
   const [isMobile, setIsMobile] = useState(false)
+  const [isLowPerformance, setIsLowPerformance] = useState(false)
   
-  // Detect mobile device
+  // Detect mobile device and performance level
   useEffect(() => {
     const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window)
+      const mobile = window.innerWidth < 768 || 'ontouchstart' in window
+      setIsMobile(mobile)
+      
+      // Detect low performance devices
+      const isLowPerf = mobile || 
+        (navigator as any).hardwareConcurrency < 4 || 
+        (navigator as any).deviceMemory < 4
+      setIsLowPerformance(isLowPerf)
     }
     checkMobile()
     window.addEventListener('resize', checkMobile)
@@ -55,14 +63,15 @@ const FluidAbstractHero: React.FC = () => {
 
     const newShapes: FloatingShape[] = []
     
-    for (let i = 0; i < 12; i++) { // Increased from 8 to 12 shapes
+    const shapeCount = isLowPerformance ? 6 : 12 // Reduce shapes on low performance devices
+    for (let i = 0; i < shapeCount; i++) {
       newShapes.push({
         id: i,
         x: Math.random() * 100,
         y: Math.random() * 100,
         depth: 0.1 + Math.random() * 0.8, // 0.1 to 0.9
         scale: 0.8 + Math.random() * 1.8, // 0.8 to 2.6 - larger shapes
-        blur: Math.random() * 12 + 3, // 3 to 15px - less blur for more visibility
+        blur: isLowPerformance ? Math.random() * 6 + 2 : Math.random() * 12 + 3, // Reduce blur on low performance
         opacity: 0.6 + Math.random() * 0.4, // 0.6 to 1.0 - much higher opacity
         rotation: Math.random() * 360,
         rotationSpeed: (Math.random() - 0.5) * 0.5, // -0.25 to 0.25
@@ -95,41 +104,55 @@ const FluidAbstractHero: React.FC = () => {
     }
   }, [mousePosition, isMobile])
 
-  // Smooth animation loop
+  // Smooth animation loop with performance optimization
   useEffect(() => {
-    const animate = () => {
-      const currentTime = Date.now()
-      
-      // Smooth interpolation for mouse following
-      if (!isMobile) {
-        setCurrentOffset(prev => ({
-          x: prev.x + (mouseOffset.x - prev.x) * 0.02, // Smooth factor
-          y: prev.y + (mouseOffset.y - prev.y) * 0.02
-        }))
+    let frameCount = 0
+    const targetFPS = isLowPerformance ? 30 : 60
+    const frameInterval = 1000 / targetFPS
+    let lastTime = 0
+    
+    const animate = (currentTime: number) => {
+      if (currentTime - lastTime < frameInterval) {
+        animationFrameRef.current = requestAnimationFrame(animate)
+        return
       }
       
-      // Update shape rotations and oscillations
-      setShapes(prevShapes => 
-        prevShapes.map(shape => ({
-          ...shape,
-          rotation: shape.rotation + shape.rotationSpeed,
-          // Add subtle oscillation for ambient movement
-          oscillationX: Math.sin(currentTime * shape.oscillationSpeed) * 20,
-          oscillationY: Math.cos(currentTime * shape.oscillationSpeed * 0.7) * 15
-        }))
-      )
+      lastTime = currentTime
+      frameCount++
+      
+      // Update mouse offset less frequently on low performance devices
+      if (frameCount % (isLowPerformance ? 2 : 1) === 0) {
+        if (!isMobile) {
+          setCurrentOffset(prev => ({
+            x: prev.x + (mouseOffset.x - prev.x) * (isLowPerformance ? 0.05 : 0.02),
+            y: prev.y + (mouseOffset.y - prev.y) * (isLowPerformance ? 0.05 : 0.02)
+          }))
+        }
+      }
+      
+      // Update shape animations less frequently on low performance
+      if (frameCount % (isLowPerformance ? 3 : 1) === 0) {
+        setShapes(prevShapes => 
+          prevShapes.map(shape => ({
+            ...shape,
+            rotation: shape.rotation + shape.rotationSpeed,
+            oscillationX: Math.sin(currentTime * shape.oscillationSpeed) * (isLowPerformance ? 10 : 20),
+            oscillationY: Math.cos(currentTime * shape.oscillationSpeed * 0.7) * (isLowPerformance ? 8 : 15)
+          }))
+        )
+      }
       
       animationFrameRef.current = requestAnimationFrame(animate)
     }
     
-    animate()
+    animationFrameRef.current = requestAnimationFrame(animate)
     
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [mouseOffset, isMobile])
+  }, [mouseOffset, isMobile, isLowPerformance])
 
   // Calculate transform for each shape
   const getShapeTransform = useCallback((shape: FloatingShape) => {
@@ -156,7 +179,9 @@ const FluidAbstractHero: React.FC = () => {
   const renderShape = (shape: FloatingShape) => {
     const baseStyle = {
       transform: getShapeTransform(shape),
-      filter: `blur(${shape.blur}px) drop-shadow(0 0 30px ${shape.color}) drop-shadow(0 0 60px ${shape.color})`,
+      filter: isLowPerformance ? 
+        `blur(${shape.blur}px)` : 
+        `blur(${shape.blur}px) drop-shadow(0 0 30px ${shape.color}) drop-shadow(0 0 60px ${shape.color})`,
       opacity: shape.opacity,
       transition: isMobile ? 'none' : 'transform 0.1s ease-out'
     }
