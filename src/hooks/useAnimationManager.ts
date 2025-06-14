@@ -107,7 +107,9 @@ export const useAnimationManager = () => {
     idRef.current = id
     callbackRef.current = callback
     
-    manager.setTargetFPS(targetFPS)
+    // Set adaptive FPS based on device performance
+    const adaptiveFPS = Math.min(targetFPS, 60)
+    manager.setTargetFPS(adaptiveFPS)
     manager.subscribe(id, callback, priority)
 
     return () => {

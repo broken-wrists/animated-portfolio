@@ -192,3 +192,41 @@ body {
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
 }
+
+/* Ultra-smooth animation optimizations */
+.ultra-smooth {
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  perspective: 1000px;
+  -webkit-perspective: 1000px;
+  contain: layout style paint;
+  isolation: isolate;
+}
+
+/* Cursor-specific optimizations */
+.cursor-optimized {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  contain: layout style;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Prevent reflows and repaints */
+.no-reflow {
+  contain: layout style paint size;
+  isolation: isolate;
+}
+
+/* Force hardware acceleration */
+@supports (will-change: transform) {
+  .hw-accelerated {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+  }
+}

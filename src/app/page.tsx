@@ -10,7 +10,7 @@ import SkillsSection from '@/components/sections/SkillsSection'
 import ContactSection from '@/components/sections/ContactSection'
 import Footer from '@/components/ui/Footer'
 import LoadingScreen from '@/components/ui/LoadingScreen'
-import CustomCursor from '@/components/ui/CustomCursor'
+import UltraCursor from '@/components/ui/UltraCursor'
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -116,8 +116,8 @@ export default function HomePage() {
       {/* Loading Screen */}
       <LoadingScreen onComplete={() => setIsLoading(false)} />
 
-      {/* Custom Cursor */}
-      {!isLoading && <CustomCursor />}
+      {/* Ultra-Optimized Cursor */}
+      {!isLoading && <UltraCursor />}
 
       {/* Main Content */}
       {!isLoading && (

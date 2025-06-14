@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
-import { useMousePosition } from '@/hooks/useMousePosition'
+import { useOptimizedMouse } from '@/hooks/useOptimizedMouse'
 import { useAnimationManager } from '@/hooks/useAnimationManager'
 import { usePerformance } from '@/hooks/usePerformance'
 
@@ -24,7 +24,7 @@ interface FloatingShape {
 
 const FluidAbstractHero: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null)
-  const mousePosition = useMousePosition(20) // Throttle to 50fps for mouse
+  const mousePosition = useOptimizedMouse(16) // Throttle to 60fps for mouse
   const { subscribe } = useAnimationManager()
   const performance = usePerformance()
   
@@ -94,39 +94,39 @@ const FluidAbstractHero: React.FC = () => {
     }
   }, [mousePosition.x, mousePosition.y, performance.isMobile, performance.isLowPerformance])
 
-  // Centralized animation loop using animation manager
+  // Ultra-optimized animation loop with batched updates
   useEffect(() => {
-    let frameCount = 0
-    const updateInterval = performance.isLowPerformance ? 3 : 2 // Update every 2-3 frames
+    // let frameCount = 0  // Removed unused variable
+    let lastRenderTime = 0
+    const renderInterval = performance.isLowPerformance ? 33 : 16 // 30fps vs 60fps
     
     const unsubscribe = subscribe(
       (timestamp: number) => {
-        frameCount++
         
-        // Update mouse following
-        if (!performance.isMobile && frameCount % 2 === 0) {
-          const lerpFactor = performance.isLowPerformance ? 0.08 : 0.05
+        // Mouse following with variable update rates
+        if (!performance.isMobile) {
+          const lerpFactor = performance.isLowPerformance ? 0.12 : 0.08
           currentOffsetRef.current = {
             x: currentOffsetRef.current.x + (mouseOffsetRef.current.x - currentOffsetRef.current.x) * lerpFactor,
             y: currentOffsetRef.current.y + (mouseOffsetRef.current.y - currentOffsetRef.current.y) * lerpFactor
           }
         }
         
-        // Update shape animations less frequently
-        if (frameCount % updateInterval === 0) {
+        // Batch shape updates with render throttling
+        if (timestamp - lastRenderTime >= renderInterval) {
           shapesRef.current = shapesRef.current.map(shape => ({
             ...shape,
             rotation: shape.rotation + shape.rotationSpeed,
-            oscillationX: Math.sin(timestamp * shape.oscillationSpeed) * (performance.isLowPerformance ? 8 : 15),
-            oscillationY: Math.cos(timestamp * shape.oscillationSpeed * 0.7) * (performance.isLowPerformance ? 6 : 12)
+            oscillationX: Math.sin(timestamp * shape.oscillationSpeed) * (performance.isLowPerformance ? 6 : 12),
+            oscillationY: Math.cos(timestamp * shape.oscillationSpeed * 0.7) * (performance.isLowPerformance ? 4 : 8)
           }))
           
-          // Trigger re-render only when needed
           setRenderTrigger(prev => prev + 1)
+          lastRenderTime = timestamp
         }
       },
       1, // High priority
-      performance.isLowPerformance ? 30 : 45 // Reduced target FPS
+      performance.isLowPerformance ? 30 : 60 // Adaptive target FPS
     )
     
     return unsubscribe
@@ -318,21 +318,6 @@ const FluidAbstractHero: React.FC = () => {
         }
       `}</style>
       
-      {/* Custom cursor for desktop */}
-      {!performance.isMobile && (
-        <div
-          className="fixed pointer-events-none z-50 rounded-full border border-white/20"
-          style={{
-            width: '20px',
-            height: '20px',
-            left: mousePosition.x - 10,
-            top: mousePosition.y - 10,
-            background: 'rgba(255, 255, 255, 0.1)',
-            backdropFilter: 'blur(10px)',
-            transition: 'all 0.1s ease'
-          }}
-        />
-      )}
       
       {/* Performance optimization overlay */}
       <div 
