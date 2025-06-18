@@ -54,6 +54,80 @@ const HeroSection: React.FC = () => {
         }}
       />
 
+      {/* Breathing Circle Shapes */}
+      <motion.div
+        className="absolute top-1/2 left-1/4 w-96 h-96 rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(147, 51, 234, 0.1) 40%, transparent 70%)',
+          filter: 'blur(2px)',
+        }}
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.3, 0.6, 0.3],
+          rotate: [0, 180, 360],
+        }}
+        transition={{
+          duration: 12,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+
+      <motion.div
+        className="absolute bottom-1/4 right-1/3 w-80 h-80 rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(245, 158, 11, 0.08) 35%, transparent 65%)',
+          filter: 'blur(3px)',
+        }}
+        animate={{
+          scale: [1.2, 0.8, 1.2],
+          opacity: [0.2, 0.5, 0.2],
+          rotate: [360, 180, 0],
+        }}
+        transition={{
+          duration: 15,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+
+      <motion.div
+        className="absolute top-1/6 right-1/6 w-64 h-64 rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, rgba(99, 102, 241, 0.08) 30%, transparent 60%)',
+          filter: 'blur(1px)',
+        }}
+        animate={{
+          scale: [0.9, 1.4, 0.9],
+          opacity: [0.4, 0.7, 0.4],
+          x: [-10, 10, -10],
+          y: [-15, 15, -15],
+        }}
+        transition={{
+          duration: 18,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+
+      <motion.div
+        className="absolute bottom-1/6 left-1/6 w-72 h-72 rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(139, 92, 246, 0.06) 25%, transparent 55%)',
+          filter: 'blur(4px)',
+        }}
+        animate={{
+          scale: [1.1, 0.7, 1.1],
+          opacity: [0.25, 0.4, 0.25],
+          rotate: [0, -360, -720],
+        }}
+        transition={{
+          duration: 20,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+
       {/* Hero Content */}
       <motion.div
         className="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto"
@@ -79,7 +153,13 @@ const HeroSection: React.FC = () => {
         >
           <span className="block text-white">I'm a</span>
           <span className="block gradient-text text-shadow-neon">
-            <GlitchText text="Digital Artisan" intensity="low" />
+            <GlitchText 
+              text="Digital Artisan" 
+              intensity="high" 
+              enableTypewriter={true}
+              enableWaveEffect={true}
+              enableColorShift={true}
+            />
           </span>
         </motion.h1>
 
