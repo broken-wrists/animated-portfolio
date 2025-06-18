@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter, Fira_Code } from 'next/font/google'
 import './globals.css'
+import CustomCursor from '@/components/ui/CustomCursor'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -67,6 +68,7 @@ export default function RootLayout({
         <meta name="color-scheme" content="dark" />
       </head>
       <body className={`${inter.className} antialiased bg-dark-bg text-white overflow-x-hidden`}>
+        <CustomCursor />
         <div className="relative min-h-screen">
           {children}
         </div>

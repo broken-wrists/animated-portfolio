@@ -64,7 +64,8 @@ const Navigation: React.FC = () => {
                   e.preventDefault()
                   handleNavClick('#hero-content')
                 }}
-                className="text-2xl font-bold gradient-text cursor-pointer"
+                className="text-2xl font-bold gradient-text cursor-hover"
+                data-cursor="hover"
               >
                 JG
               </a>
@@ -121,7 +122,8 @@ const Navigation: React.FC = () => {
             <div className="md:hidden">
               <motion.button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-gray-400 hover:text-neon-green transition-colors duration-200"
+                className="text-gray-400 hover:text-neon-green transition-colors duration-200 cursor-hover"
+                data-cursor="hover"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -150,7 +152,8 @@ const Navigation: React.FC = () => {
                       e.preventDefault()
                       handleNavClick(item.href)
                     }}
-                    className="text-gray-300 hover:text-neon-green block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 cursor-pointer"
+                    className="text-gray-300 hover:text-neon-green block px-3 py-2 rounded-md text-base font-medium transition-colors duration-200 cursor-hover"
+                    data-cursor="hover"
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
@@ -168,7 +171,8 @@ const Navigation: React.FC = () => {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-400 hover:text-neon-green transition-colors duration-200"
+                      className="text-gray-400 hover:text-neon-green transition-colors duration-200 cursor-hover"
+                      data-cursor="hover"
                       whileHover={{ scale: 1.2 }}
                       whileTap={{ scale: 0.9 }}
                       initial={{ opacity: 0, scale: 0 }}
