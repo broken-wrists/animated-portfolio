@@ -6,8 +6,8 @@ export class PerformanceOptimizer {
   private rafCallbacks: Map<string, (timestamp: number) => void> = new Map()
   private rafId: number | null = null
   private isRunning = false
-  private targetFPS = 60
-  private frameTime = 1000 / 60
+  private targetFPS = 120
+  private frameTime = 1000 / 120
   private lastTime = 0
 
   static getInstance(): PerformanceOptimizer {

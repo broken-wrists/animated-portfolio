@@ -10,7 +10,6 @@ import SkillsSection from '@/components/sections/SkillsSection'
 import ContactSection from '@/components/sections/ContactSection'
 import Footer from '@/components/ui/Footer'
 import LoadingScreen from '@/components/ui/LoadingScreen'
-import FinalCursor from '@/components/ui/FinalCursor'
 
 export default function HomePage() {
   const [isLoading, setIsLoading] = useState(true)
@@ -141,18 +140,6 @@ export default function HomePage() {
         </main>
       )}
 
-      {/* Final Cursor - Bulletproof implementation that renders to document.body */}
-      {!isLoading && <FinalCursor />}
-      
-      {/* Debug: Add visual indicator */}
-      {!isLoading && (
-        <div 
-          className="fixed top-4 right-4 z-[999990] bg-green-500 text-black p-2 text-xs rounded opacity-50 pointer-events-none"
-          style={{ display: 'block' }} // Enable for debugging
-        >
-          FinalCursor Active - Should work on ALL pages
-        </div>
-      )}
     </>
   )
 }

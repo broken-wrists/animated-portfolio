@@ -12,10 +12,9 @@ interface ParticleFieldProps {
   className?: string
 }
 
-function Particles({ count = 500, interactive = true }: { count: number; interactive: boolean }) {
+function Particles({ count = 50, interactive = true }: { count: number; interactive: boolean }) {
   const ref = useRef<THREE.Points>(null)
-  const { size, viewport } = useThree()
-  const aspect = size.width / viewport.width
+  const { size } = useThree()
   const mousePosition = useMousePosition()
 
   const positions = useMemo(() => {
@@ -46,7 +45,7 @@ function Particles({ count = 500, interactive = true }: { count: number; interac
     return colors
   }, [count])
 
-  useFrame((state, delta) => {
+  useFrame((state) => {
     if (!ref.current) return
 
     const time = state.clock.getElapsedTime()
@@ -58,19 +57,19 @@ function Particles({ count = 500, interactive = true }: { count: number; interac
       // Floating animation
       positions[i3 + 1] += Math.sin(time + positions[i3]) * 0.001
       
-      // Interactive mouse effect
-      if (interactive) {
+      // Simplified mouse effect (only every 4th particle for performance)
+      if (interactive && i % 4 === 0) {
         const mouseX = (mousePosition.x / size.width) * 2 - 1
         const mouseY = -(mousePosition.y / size.height) * 2 + 1
         
         const dx = positions[i3] - mouseX * 5
         const dy = positions[i3 + 1] - mouseY * 5
-        const distance = Math.sqrt(dx * dx + dy * dy)
+        const distance = dx * dx + dy * dy // Skip sqrt for performance
         
-        if (distance < 2) {
-          const force = (2 - distance) * 0.002
-          positions[i3] += dx * force
-          positions[i3 + 1] += dy * force
+        if (distance < 4) {
+          const force = (4 - distance) * 0.001
+          positions[i3] += dx * force * 0.5
+          positions[i3 + 1] += dy * force * 0.5
         }
       }
       
@@ -99,37 +98,9 @@ function Particles({ count = 500, interactive = true }: { count: number; interac
   )
 }
 
-function MorphingShape() {
-  const ref = useRef<THREE.Mesh>(null)
-
-  useFrame((state) => {
-    if (!ref.current) return
-    
-    const time = state.clock.getElapsedTime()
-    ref.current.rotation.x = time * 0.2
-    ref.current.rotation.y = time * 0.1
-    ref.current.rotation.z = time * 0.15
-    
-    // Morphing effect
-    const scale = 1 + Math.sin(time) * 0.1
-    ref.current.scale.setScalar(scale)
-  })
-
-  return (
-    <mesh ref={ref} position={[0, 0, 0]}>
-      <icosahedronGeometry args={[1, 1]} />
-      <meshBasicMaterial 
-        color="#007fff" 
-        transparent 
-        opacity={0.1}
-        wireframe
-      />
-    </mesh>
-  )
-}
 
 const ParticleField: React.FC<ParticleFieldProps> = ({ 
-  count = 500, 
+  count = 50, 
   interactive = true, 
   className = '' 
 }) => {
@@ -140,7 +111,6 @@ const ParticleField: React.FC<ParticleFieldProps> = ({
         style={{ background: 'transparent' }}
       >
         <Particles count={count} interactive={interactive} />
-        <MorphingShape />
       </Canvas>
     </div>
   )

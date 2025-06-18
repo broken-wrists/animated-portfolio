@@ -35,8 +35,8 @@ export const usePerformance = (): PerformanceConfig => {
         reducedMotion
 
       // Adjust settings based on performance level
-      const targetFPS = isLowPerformance ? 30 : 60
-      const animationScale = isLowPerformance ? 0.5 : 1
+      const targetFPS = isLowPerformance ? 60 : 120
+      const animationScale = isLowPerformance ? 0.75 : 1
 
       setConfig({
         isLowPerformance,

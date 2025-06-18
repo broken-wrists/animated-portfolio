@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 
 interface GlitchTextProps {
@@ -16,41 +16,46 @@ const GlitchText: React.FC<GlitchTextProps> = ({
 }) => {
   const [glitchedText, setGlitchedText] = useState(text)
   const [isGlitching, setIsGlitching] = useState(false)
+  const timeoutRef = useRef<NodeJS.Timeout>()
+  const intervalRef = useRef<NodeJS.Timeout>()
 
   const glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?'
   
   const intensitySettings = {
-    low: { frequency: 3000, duration: 100, charCount: 1 },
-    medium: { frequency: 2000, duration: 150, charCount: 2 },
-    high: { frequency: 1000, duration: 200, charCount: 3 }
+    low: { frequency: 8000, duration: 40, charCount: 1 },
+    medium: { frequency: 6000, duration: 60, charCount: 1 },
+    high: { frequency: 4000, duration: 80, charCount: 2 }
   }
 
   const settings = intensitySettings[intensity]
 
+  const glitch = useCallback(() => {
+    if (isGlitching) return // Prevent overlapping glitches
+    
+    setIsGlitching(true)
+    const glitchedArray = text.split('')
+
+    // Only glitch one character for performance
+    const randomIndex = Math.floor(Math.random() * text.length)
+    const randomGlitchChar = glitchChars[Math.floor(Math.random() * glitchChars.length)]
+    glitchedArray[randomIndex] = randomGlitchChar
+
+    setGlitchedText(glitchedArray.join(''))
+
+    timeoutRef.current = setTimeout(() => {
+      setGlitchedText(text)
+      setIsGlitching(false)
+    }, settings.duration)
+  }, [text, settings.duration, isGlitching])
+
   useEffect(() => {
-    const glitch = () => {
-      setIsGlitching(true)
-      const textArray = text.split('')
-      const glitchedArray = [...textArray]
-
-      // Replace random characters with glitch chars
-      for (let i = 0; i < settings.charCount; i++) {
-        const randomIndex = Math.floor(Math.random() * textArray.length)
-        const randomGlitchChar = glitchChars[Math.floor(Math.random() * glitchChars.length)]
-        glitchedArray[randomIndex] = randomGlitchChar
-      }
-
-      setGlitchedText(glitchedArray.join(''))
-
-      setTimeout(() => {
-        setGlitchedText(text)
-        setIsGlitching(false)
-      }, settings.duration)
+    intervalRef.current = setInterval(glitch, settings.frequency)
+    
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
     }
-
-    const interval = setInterval(glitch, settings.frequency)
-    return () => clearInterval(interval)
-  }, [text, settings])
+  }, [glitch, settings.frequency])
 
   return (
     <motion.span

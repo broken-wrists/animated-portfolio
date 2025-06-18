@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
-import { gsap } from 'gsap'
+import React, { useEffect, useRef, useState } from 'react'
 
 interface ScrollRevealProps {
   children: React.ReactNode
@@ -9,7 +8,6 @@ interface ScrollRevealProps {
   distance?: number
   duration?: number
   delay?: number
-  ease?: string
   className?: string
 }
 
@@ -19,70 +17,57 @@ const ScrollReveal: React.FC<ScrollRevealProps> = ({
   distance = 60,
   duration = 0.8,
   delay = 0,
-  ease = 'power2.out',
   className = ''
 }) => {
   const elementRef = useRef<HTMLDivElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !elementRef.current) return
+    if (!elementRef.current) return
 
-    const element = elementRef.current
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.1, rootMargin: '-10%' }
+    )
 
-    // Set initial state
-    const initialState: any = { opacity: 0 }
+    observer.observe(elementRef.current)
+
+    return () => observer.disconnect()
+  }, [])
+
+  const getTransform = () => {
+    if (isVisible) return 'translate3d(0, 0, 0)'
     
     switch (direction) {
       case 'up':
-        initialState.y = distance
-        break
+        return `translate3d(0, ${distance}px, 0)`
       case 'down':
-        initialState.y = -distance
-        break
+        return `translate3d(0, -${distance}px, 0)`
       case 'left':
-        initialState.x = distance
-        break
+        return `translate3d(${distance}px, 0, 0)`
       case 'right':
-        initialState.x = -distance
-        break
+        return `translate3d(-${distance}px, 0, 0)`
+      default:
+        return `translate3d(0, ${distance}px, 0)`
     }
-
-    gsap.set(element, initialState)
-
-    // Create scroll trigger animation
-    const ScrollTrigger = require('gsap/ScrollTrigger')
-    gsap.registerPlugin(ScrollTrigger)
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: element,
-        start: 'top 85%',
-        end: 'bottom 15%',
-        toggleActions: 'play none none reverse',
-        once: true,
-      }
-    })
-
-    tl.to(element, {
-      opacity: 1,
-      x: 0,
-      y: 0,
-      duration,
-      delay,
-      ease,
-    })
-
-    return () => {
-      ScrollTrigger.getAll().forEach((trigger: any) => {
-        if (trigger.trigger === element) {
-          trigger.kill()
-        }
-      })
-    }
-  }, [direction, distance, duration, delay, ease])
+  }
 
   return (
-    <div ref={elementRef} className={className}>
+    <div 
+      ref={elementRef} 
+      className={className}
+      style={{
+        opacity: isVisible ? 1 : 0,
+        transform: getTransform(),
+        transition: `all ${duration}s ease-out ${delay}s`,
+        willChange: 'transform, opacity'
+      }}
+    >
       {children}
     </div>
   )

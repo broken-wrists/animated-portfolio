@@ -7,7 +7,7 @@ interface OptimizedMousePosition {
   y: number
 }
 
-export const useOptimizedMouse = (throttleMs = 4) => {
+export const useOptimizedMouse = (throttleMs = 2) => {
   const [mousePosition, setMousePosition] = useState<OptimizedMousePosition>({ x: 0, y: 0 })
   const lastUpdateRef = useRef(0)
   const positionRef = useRef({ x: 0, y: 0 })

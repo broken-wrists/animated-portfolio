@@ -13,17 +13,14 @@ class AnimationManager {
   private rafId: number | null = null
   private lastTime = 0
   private isRunning = false
-  private targetFPS = 60
-  private frameInterval = 1000 / 60
+  private targetFPS = 120
+  private frameInterval = 1000 / 120
 
   constructor() {
     this.tick = this.tick.bind(this)
   }
 
-  setTargetFPS(fps: number) {
-    this.targetFPS = fps
-    this.frameInterval = 1000 / fps
-  }
+  // Removed FPS throttling for maximum performance
 
   subscribe(id: string, callback: (timestamp: number, deltaTime: number) => void, priority = 0) {
     this.subscribers.set(id, { id, callback, priority })
@@ -38,25 +35,13 @@ class AnimationManager {
   }
 
   private tick(timestamp: number) {
-    if (timestamp - this.lastTime < this.frameInterval) {
-      this.rafId = requestAnimationFrame(this.tick)
-      return
-    }
-
     const deltaTime = timestamp - this.lastTime
     this.lastTime = timestamp
 
-    // Sort by priority and execute callbacks
-    const sortedSubscribers = Array.from(this.subscribers.values())
-      .sort((a, b) => b.priority - a.priority)
-
-    for (const subscriber of sortedSubscribers) {
-      try {
-        subscriber.callback(timestamp, deltaTime)
-      } catch (error) {
-        console.warn(`Animation callback error for ${subscriber.id}:`, error)
-      }
-    }
+    // Execute callbacks without sorting for performance
+    this.subscribers.forEach(subscriber => {
+      subscriber.callback(timestamp, deltaTime)
+    })
 
     this.rafId = requestAnimationFrame(this.tick)
   }
@@ -101,15 +86,13 @@ export const useAnimationManager = () => {
   const subscribe = useCallback((
     callback: (timestamp: number, deltaTime: number) => void,
     priority = 0,
-    targetFPS = 60
+    _targetFPS = 60
   ) => {
     const id = `anim_${Math.random().toString(36).substr(2, 9)}`
     idRef.current = id
     callbackRef.current = callback
     
-    // Set adaptive FPS based on device performance
-    const adaptiveFPS = Math.min(targetFPS, 60)
-    manager.setTargetFPS(adaptiveFPS)
+    // Removed FPS throttling for maximum performance
     manager.subscribe(id, callback, priority)
 
     return () => {

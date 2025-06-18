@@ -49,7 +49,7 @@ const FluidAbstractHero: React.FC = () => {
       'rgba(139, 92, 246, 0.8)',
     ]
 
-    const shapeCount = performance.isLowPerformance ? 4 : 8 // Further reduced
+    const shapeCount = performance.isLowPerformance ? 2 : 4 // Drastically reduced for 120fps
     const shapes: FloatingShape[] = []
     
     for (let i = 0; i < shapeCount; i++) {
@@ -59,13 +59,13 @@ const FluidAbstractHero: React.FC = () => {
         y: Math.random() * 100,
         depth: 0.1 + Math.random() * 0.8,
         scale: 0.8 + Math.random() * 1.8,
-        blur: performance.isLowPerformance ? Math.random() * 4 + 1 : Math.random() * 8 + 2,
+        blur: performance.isLowPerformance ? 0 : Math.random() * 2 + 1, // Minimal blur
         opacity: 0.6 + Math.random() * 0.4,
         rotation: Math.random() * 360,
-        rotationSpeed: (Math.random() - 0.5) * 0.3, // Slower rotation
-        oscillationX: Math.random() * 30 + 15, // Reduced oscillation
-        oscillationY: Math.random() * 20 + 10,
-        oscillationSpeed: 0.0005 + Math.random() * 0.001, // Slower oscillation
+        rotationSpeed: (Math.random() - 0.5) * 0.1, // Much slower rotation
+        oscillationX: Math.random() * 15 + 5, // Minimal oscillation
+        oscillationY: Math.random() * 10 + 5,
+        oscillationSpeed: 0.0002 + Math.random() * 0.0003, // Much slower
         color: colors[Math.floor(Math.random() * colors.length)],
         type: shapeTypes[Math.floor(Math.random() * shapeTypes.length)]
       })
